@@ -3,164 +3,448 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>我的泰文學習入口</title>
+  <title>泰文學習系統｜曼谷生活實戰日誌</title>
   <style>
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #fffaf3;
-      color: #2f2a24;
-      line-height: 1.6;
+    :root {
+      --bg: #fffaf4;
+      --text: #302820;
+      --muted: #7a6f63;
+      --line: rgba(88,63,35,.16);
+      --card: rgba(255,255,255,.9);
+      --orange: #f2a35d;
+      --orange-soft: #fff1df;
+      --green: #78b887;
+      --green-soft: #eef9f1;
+      --blue: #6ea8d6;
+      --blue-soft: #eef7ff;
+      --red: #dc776f;
+      --red-soft: #fff0ef;
+      --purple: #8873c9;
+      --purple-soft: #f6f1ff;
+      --shadow: 0 12px 28px rgba(74,45,18,.08);
+      --shadow-hover: 0 20px 40px rgba(74,45,18,.13);
+      --radius: 18px;
     }
 
-    .wrap {
-      max-width: 760px;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Noto Sans TC", "Noto Sans Thai", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(242,163,93,.16), transparent 36%),
+        radial-gradient(circle at top right, rgba(110,168,214,.14), transparent 38%),
+        linear-gradient(135deg,#fffaf4 0%,#fbfffb 55%,#f7fbff 100%);
+      color: var(--text);
+      padding: 52px 20px 72px;
+      line-height: 1.68;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 860px;
       margin: 0 auto;
-      padding: 48px 20px;
+    }
+
+    /* ── Header ── */
+    .header {
+      margin-bottom: 48px;
+    }
+
+    .eyebrow {
+      font-size: 11.5px;
+      font-weight: 720;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: #9a3412;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      display: inline-block;
+      width: 22px;
+      height: 2px;
+      background: var(--orange);
+      border-radius: 2px;
     }
 
     h1 {
-      font-size: 30px;
-      margin-bottom: 8px;
+      font-size: 2.45rem;
+      font-weight: 860;
+      letter-spacing: -.03em;
+      line-height: 1.16;
+      color: var(--text);
+      margin-bottom: 14px;
     }
 
     .subtitle {
-      color: #7a6a58;
-      margin-bottom: 32px;
+      font-size: 1rem;
+      color: var(--muted);
+      max-width: 680px;
+      line-height: 1.72;
+      margin-bottom: 22px;
     }
 
+    .header-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .header-tag {
+      font-size: 0.76rem;
+      font-weight: 650;
+      border-radius: 999px;
+      padding: 4px 11px;
+      background: var(--orange-soft);
+      color: #9a3412;
+      border: 1px solid #fed7aa;
+    }
+
+    /* ── Progress bar ── */
+    .progress-bar {
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 20px;
+      margin-bottom: 42px;
+      box-shadow: var(--shadow);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .progress-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .progress-item + .progress-item {
+      border-left: 1px solid var(--line);
+      padding-left: 20px;
+    }
+
+    .progress-num {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #9a3412;
+      line-height: 1.2;
+    }
+
+    .progress-label {
+      font-size: 0.81rem;
+      color: var(--muted);
+      font-weight: 550;
+    }
+
+    /* ── Section heading ── */
     .section-title {
-      font-size: 18px;
-      margin: 32px 0 12px;
-      color: #4b3d2f;
+      font-size: 0.82rem;
+      font-weight: 760;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .card {
+    .section-title::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    /* ── Timeline ── */
+    .timeline {
+      position: relative;
+      padding-left: 28px;
+    }
+
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 16px;
+      bottom: 16px;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--orange) 0%, rgba(88,63,35,.12) 100%);
+    }
+
+    .timeline-item {
+      position: relative;
+      padding-bottom: 22px;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -24px;
+      top: 18px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(88,63,35,.28);
+      border: 2px solid #fff;
+      box-shadow: 0 0 0 2px rgba(88,63,35,.18);
+      z-index: 2;
+      transition: all .2s ease;
+    }
+
+    .timeline-item:first-child .timeline-dot {
+      background: var(--orange);
+      box-shadow: 0 0 0 3px var(--orange-soft);
+    }
+
+    .log-card {
       display: block;
+      background: var(--card);
+      padding: 20px 22px;
+      border-radius: var(--radius);
       text-decoration: none;
       color: inherit;
-      background: #ffffff;
-      border: 1px solid #eadfce;
-      border-radius: 18px;
-      padding: 18px 20px;
-      margin-bottom: 14px;
-      box-shadow: 0 4px 14px rgba(80, 50, 20, 0.06);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
     }
 
-    .card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 22px rgba(80, 50, 20, 0.1);
+    .log-card:hover {
+      transform: translateX(5px) translateY(-2px);
+      box-shadow: var(--shadow-hover);
+      border-color: rgba(240,125,40,.3);
     }
 
-    .card h2 {
-      font-size: 18px;
-      margin: 0 0 4px;
+    .log-card:hover + .timeline-item .timeline-dot,
+    .timeline-item:hover .timeline-dot {
+      background: var(--orange);
     }
 
-    .card p {
-      margin: 0;
-      color: #7a6a58;
-      font-size: 14px;
+    .log-date {
+      font-size: 0.8rem;
+      font-weight: 720;
+      color: var(--muted);
+      letter-spacing: .05em;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .tag {
-      display: inline-block;
-      font-size: 12px;
-      background: #f3eadc;
-      color: #7a5433;
-      padding: 3px 8px;
-      border-radius: 999px;
-      margin-bottom: 8px;
+    .badge-new {
+      background: var(--orange-soft);
+      color: #c2410c;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 760;
     }
 
-
-    .github-link {
-      text-align: center;
-      margin-top: 28px;
+    .log-title {
+      font-size: 1.16rem;
+      font-weight: 820;
+      color: var(--text);
+      letter-spacing: -.01em;
+      margin-bottom: 6px;
     }
 
-    .github-link a {
-      color: #000000;
+    .log-desc {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+      line-height: 1.58;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .log-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tag { font-size: 0.76rem; background: #f3f4f6; color: #374151; padding: 3px 9px; border-radius: 7px; font-weight: 580; border: 1px solid #e5e7eb; }
+    .tag.orange { background: var(--orange-soft); color: #9a3412; border-color: #fed7aa; }
+    .tag.green  { background: var(--green-soft);  color: #166534; border-color: #bbf7d0; }
+    .tag.blue   { background: var(--blue-soft);   color: #1d4ed8; border-color: #bfdbfe; }
+    .tag.purple { background: var(--purple-soft); color: #5b21b6; border-color: #ddd6fe; }
+
+    /* ── Footer ── */
+    .footer {
+      margin-top: 56px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .footer-note {
+      font-size: 0.83rem;
+      color: var(--muted);
+      max-width: 480px;
+      line-height: 1.6;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      font-size: 0.81rem;
+      font-weight: 660;
+      color: var(--muted);
       text-decoration: none;
-      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.72);
+      transition: all .18s ease;
     }
 
-    .github-link a:hover {
-      text-decoration: underline;
+    .footer-link:hover {
+      color: var(--orange);
+      border-color: rgba(240,125,40,.3);
+      background: var(--orange-soft);
     }
 
-    footer {
-      margin-top: 40px;
-      color: #9a8a78;
-      font-size: 13px;
-      text-align: center;
+    @media (max-width: 680px) {
+      body { padding: 34px 14px 56px; }
+      h1 { font-size: 1.9rem; }
+      .progress-item + .progress-item { border-left: none; padding-left: 0; border-top: 1px solid var(--line); padding-top: 12px; }
+      .progress-bar { flex-direction: column; gap: 12px; }
+      .timeline { padding-left: 22px; }
+      .footer { flex-direction: column; }
     }
   </style>
 </head>
 
 <body>
-  <main class="wrap">
-    <h1>我的泰文學習入口</h1>
-    <p class="subtitle">
-      把高頻單字、課本筆記、每日生活泰文和發音練習放在一起，方便自己複習。
-    </p>
-    
-    <h3 class="section-title">單字庫</h3>
+  <div class="container">
 
-    <a class="card" href="https://abbyyyli.github.io/thai-frequency-vocab/" target="_blank">
-      <span class="tag">Vocabulary</span>
-      <h2>Thai 高頻單字</h2>
-      <p>依照頻率排序的泰文核心單字，適合長期累積與複習。</p>
-    </a>
-    
-    <a class="card" href="https://abbyyyli.github.io/thai-notes_daily/" target="_blank">
-      <span class="tag">Daily</span>
-      <h2>Daily Thai Notes</h2>
-      <p>每天整理生活中遇到的泰文、生詞、句型和曼谷用法。</p>
-    </a>
+    <header class="header">
+      <div class="eyebrow">Bangkok Life Notes</div>
+      <h1>曼谷生活學習日誌</h1>
+      <div class="subtitle">
+        紀錄每天遇到的泰文生詞、語氣、小詞和真實生活句。把聊天、點餐、等人、交通、情緒表達，整理成可以複習、可以 shadowing、可以直接拿去曼谷生活使用的泰語筆記。
+      </div>
+      <div class="header-tags">
+        <span class="header-tag">Daily Thai Notes</span>
+        <span class="header-tag">Bangkok Practical Thai</span>
+        <span class="header-tag">TTS Audio Notes</span>
+        <span class="header-tag">Local Usage</span>
+      </div>
+    </header>
 
-
-    <h3 class="section-title">課程筆記</h3>
-
-    <a class="card" href="https://abbyyyli.github.io/thai-notes-book1-audio/" target="_blank">
-      <span class="tag">Book 1</span>
-      <h2>Thai Book 1 Notes</h2>
-      <p>基礎生活泰文筆記，含音訊、句型、例句和實用補充。</p>
-    </a>
-
-    <a class="card" href="https://abbyyyli.github.io/thai-notes-book2-audio/" target="_blank">
-      <span class="tag">Book 2</span>
-      <h2>Thai Book 2 Notes</h2>
-      <p>進階口說、生活表達、語氣和課本延伸整理。</p>
-    </a>
-    
-    <a class="card" href="https://abbyyyli.github.io/thai-review/" target="_blank">
-      <span class="tag">Review</span>
-      <h2>Review Book 1 & 2</h2>
-      <p>單元練習、複習，整理較弱的部分。</p>
-    </a>
-    
-    <h3 class="section-title">工具箱</h3>
-
-    <a class="card" href="https://thai-vocab-app.vercel.app/app/words" target="_blank">
-      <span class="tag">Review</span>
-      <h2>Thai 字典 / SRS</h2>
-      <p>查單字、加入複習、用間隔重複慢慢記住。</p>
-    </a>
-
-    <a class="card" href="https://chipper-faloodeh-7c9aad.netlify.app/" target="_blank">
-      <span class="tag">Pronunciation</span>
-      <h2>Thai 拼音 / 聲調練習</h2>
-      <p>練習子音、母音、尾音、聲調和發音組合。</p>
-    </a>
-    <div class="github-link">
-      <a href="https://github.com/abbyyyli/thai-index.git" target="_blank"><h4>GitHub 專案倉庫</h4></a>
+    <div class="progress-bar">
+      <div class="progress-item">
+        <div class="progress-num">5 Days</div>
+        <div class="progress-label">已持續累積天數</div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-num">曼谷生活</div>
+        <div class="progress-label">主要學習情境</div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-num">TTS 音頻</div>
+        <div class="progress-label">支援泰文發音複習</div>
+      </div>
     </div>
 
-    <footer>
-      Last updated: 2026 · Thai Learning Index
+    <div class="section-title">Daily Notes Timeline</div>
+
+    <section class="timeline">
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <a href="Thai Daily Notes｜2026-05-25.html" class="log-card">
+          <div class="log-date">
+            2026-05-25
+            <span class="badge-new">最新紀錄</span>
+          </div>
+          <div class="log-title">高頻口語小詞與生活語感</div>
+          <div class="log-desc">整理 โดย / ผ่าน、เดี๋ยวก่อน、เพิ่ง、บาง / บ้าง、เกรงใจ、ถูกใจ、เยอะ、ก็แล้วกัน 等高頻小詞，練習曼谷日常聊天、點餐、轉車、請人幫忙與自然收尾說法。</div>
+          <div class="log-tags">
+            <span class="tag orange">#生活小詞</span>
+            <span class="tag green">#曼谷口語</span>
+            <span class="tag blue">#比較詞組</span>
+            <span class="tag purple">#禮貌語感</span>
+            <span class="tag">#Shadowing</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <a href="Thai Daily Notes｜2026-05-22.html" class="log-card">
+          <div class="log-date">2026-05-22</div>
+          <div class="log-title">親密稱呼、等待時間與生活回覆</div>
+          <div class="log-desc">整理 ตัวเอง 作為「自己」與親密稱呼的差異，練習吃飯回覆、等待時間、ด้วย / เดี๋ยว / รอ / ค่อย 等生活小詞，補充情緒句與曼谷口語語感。</div>
+          <div class="log-tags">
+            <span class="tag orange">#親密稱呼</span>
+            <span class="tag green">#生活小詞</span>
+            <span class="tag blue">#等待時間</span>
+            <span class="tag purple">#情緒語感</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <a href="Thai Daily Notes｜2026-05-21.html" class="log-card">
+          <div class="log-date">2026-05-21</div>
+          <div class="log-title">只、語氣、點餐與 ใจ 情緒詞</div>
+          <div class="log-desc">比較 แค่ 與 เท่านั้น 的「只是／只有」語感，整理服務業點餐與結帳句型，練習 ใจ 情緒詞、ความ 抽象名詞、ไว้ 保留語感與 เห็น 延伸用法。</div>
+          <div class="log-tags">
+            <span class="tag orange">#只與而已</span>
+            <span class="tag green">#服務業泰文</span>
+            <span class="tag blue">#點餐結帳</span>
+            <span class="tag purple">#ใจ情緒詞</span>
+          </div>
+        </a>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <a href="Thai Daily Notes｜2026-05-20.html" class="log-card">
+          <div class="log-date">2026-05-20</div>
+          <div class="log-title">曼谷碰面、地點與時間順序</div>
+          <div class="log-desc">學習 ก่อน、แล้ว 的時間順序語感，整理 ปากซอย、หน้าร้าน 等曼谷地點詞，練習 ประมาณ、ใช้เวลา、ไกล / ใกล้ 在等人、問路與點餐加料中的實用說法。</div>
+          <div class="log-tags">
+            <span class="tag green">#曼谷地點</span>
+            <span class="tag blue">#時間順序</span>
+            <span class="tag orange">#點餐加料</span>
+            <span class="tag">#生活實戰</span>
+          </div>
+        </a>
+      </div>
+
+    </section>
+
+    <footer class="footer">
+      <div class="footer-note">
+        每日筆記以真實生活泰文為主：Thai script / Romanization / English，搭配繁體中文語感說明與 TTS 複習。
+      </div>
+      <div class="footer-links">
+        <a href="https://abbyyyli.github.io/thai-index/" class="footer-link">← 學習入口</a>
+        <a href="https://abbyyyli.github.io/thai-frequency-vocab/" target="_blank" class="footer-link">📊 高頻詞彙庫</a>
+        <a href="https://github.com/abbyyyli/thai-notes_daily.git" target="_blank" class="footer-link">🗂️ GitHub</a>
+      </div>
     </footer>
-  </main>
+
+  </div>
 </body>
 </html>
