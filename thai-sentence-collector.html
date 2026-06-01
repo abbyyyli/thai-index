@@ -223,6 +223,15 @@
   }
   .del-btn:hover { color: #e05; border-color: #fcc; }
 
+  .edit-btn {
+    background: none; border: 1px solid transparent;
+    border-radius: 99px; width: 28px; height: 28px; cursor: pointer;
+    font-size: 12px; display: flex; align-items: center; justify-content: center;
+    color: #bbb; transition: all .15s;
+  }
+  .edit-btn:hover { color: var(--accent2); border-color: #c0ddd8; }
+
+
   /* review rating on cards */
   .review-info { font-size: 10.5px; color: var(--muted); margin-top: 6px; }
   .review-info .next { color: var(--accent2); }
@@ -580,6 +589,7 @@ function sentenceCard(s, showReviewInfo = false) {
     <div class="card-actions">
       <button class="tts-btn" onclick="speak('${s.thai}', this)" title="播放">🔊</button>
       <button class="fav-btn ${s.favorite ? 'active' : ''}" onclick="toggleFav('${s.id}')" title="最愛">♥</button>
+      <button class="edit-btn" onclick="openEditModal('${s.id}')" title="編輯">✏️</button>
       <button class="del-btn" onclick="deleteSentence('${s.id}')" title="刪除">✕</button>
     </div>
   </div>`;
@@ -766,6 +776,83 @@ document.addEventListener('click', function(e) {
   const m = document.getElementById('paste-modal');
   if (e.target === m) closePasteModal();
 });
+
+
+let editVocab = [];
+
+function openEditModal(id) {
+  const s = data.sentences.find(x => x.id === id);
+  if (!s) return;
+  document.getElementById('edit-id').value = id;
+  document.getElementById('edit-date').value = s.date || '';
+  document.getElementById('edit-thai').value = s.thai || '';
+  document.getElementById('edit-roman').value = s.roman || '';
+  document.getElementById('edit-chinese').value = s.chinese || '';
+  document.getElementById('edit-notes').value = s.notes || '';
+  editVocab = s.vocab ? [...s.vocab] : [];
+  renderEditChips();
+  document.getElementById('edit-modal').style.display = 'flex';
+}
+
+function closeEditModal() {
+  document.getElementById('edit-modal').style.display = 'none';
+  editVocab = [];
+}
+
+function renderEditChips() {
+  const area = document.getElementById('edit-chip-area');
+  const input = document.getElementById('edit-chip-input');
+  area.querySelectorAll('.chip').forEach(c => c.remove());
+  editVocab.forEach((v, i) => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.innerHTML = `<span class="thai-part">${v.thai}</span>${v.eng ? `<span class="eng-part">${v.eng}</span>` : ''}
+      <button class="chip-remove" onclick="removeEditChip(${i})">×</button>`;
+    area.insertBefore(chip, input);
+  });
+}
+
+function removeEditChip(i) {
+  editVocab.splice(i, 1);
+  renderEditChips();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('edit-chip-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const val = e.target.value.trim();
+      if (!val) return;
+      const parts = val.split(':');
+      editVocab.push({ thai: parts[0].trim(), eng: parts[1]?.trim() || '' });
+      renderEditChips();
+      e.target.value = '';
+    }
+    if (e.key === 'Backspace' && e.target.value === '' && editVocab.length) {
+      editVocab.pop();
+      renderEditChips();
+    }
+  });
+  document.getElementById('edit-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeEditModal();
+  });
+});
+
+function saveEdit() {
+  const id = document.getElementById('edit-id').value;
+  const s = data.sentences.find(x => x.id === id);
+  if (!s) return;
+  s.date = document.getElementById('edit-date').value.trim();
+  s.thai = document.getElementById('edit-thai').value.trim();
+  s.roman = document.getElementById('edit-roman').value.trim();
+  s.chinese = document.getElementById('edit-chinese').value.trim();
+  s.notes = document.getElementById('edit-notes').value.trim();
+  s.vocab = [...editVocab];
+  save();
+  renderCollection();
+  renderFavorites();
+  closeEditModal();
+}
 
 // ── Init ──────────────────────────────────────────────────
 load();
