@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thai Sentence Collector</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Thai:wght@400;500&display=swap');
+
+  :root {
+    --bg: #faf8f4;
+    --card: #ffffff;
+    --text: #1a1a1a;
+    --muted: #7a7068;
+    --line: #e8e2d9;
+    --accent: #c8622a;
+    --accent2: #4a7c6f;
+    --accent3: #7c5c9a;
+    --tag-bg: #f2ede6;
+    --shadow: 0 1px 4px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Serif TC', Georgia, serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--line);
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .logo { font-size: 15px; font-weight: 600; letter-spacing: .02em; }
+  .logo span { color: var(--accent); }
+
+  /* ── Tabs ── */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    background: var(--tag-bg);
+    border-radius: 8px;
+    padding: 3px;
+  }
+  .tab-btn {
+    border: none; background: none; cursor: pointer;
+    padding: 6px 14px; border-radius: 6px;
+    font-family: inherit; font-size: 12.5px;
+    color: var(--muted); transition: all .15s;
+    white-space: nowrap;
+  }
+  .tab-btn.active { background: var(--card); color: var(--text); font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .tab-btn .badge {
+    display: inline-block; background: var(--accent);
+    color: #fff; border-radius: 99px; font-size: 10px;
+    padding: 0 5px; margin-left: 4px; vertical-align: middle;
+  }
+  .tab-btn.t2 .badge { background: var(--accent3); }
+
+  .header-actions { display: flex; gap: 8px; }
+  .btn-sm {
+    border: 1px solid var(--line); background: var(--card);
+    border-radius: 6px; padding: 5px 10px; font-size: 11.5px;
+    cursor: pointer; color: var(--muted); transition: all .15s;
+    font-family: inherit;
+  }
+  .btn-sm:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Pages ── */
+  .page { display: none; padding: 24px; max-width: 1100px; margin: 0 auto; }
+  .page.active { display: block; }
+
+  /* ── Add Form ── */
+  .add-form {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow);
+  }
+  .add-form h3 { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 14px; letter-spacing: .06em; text-transform: uppercase; }
+  .form-row { display: grid; gap: 10px; margin-bottom: 10px; }
+  .form-row.cols2 { grid-template-columns: 1fr 1fr; }
+  .form-row.cols3 { grid-template-columns: 1fr 1fr 1fr; }
+  label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600; letter-spacing: .04em; }
+
+  input[type=text], textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 7px;
+    padding: 8px 10px; font-size: 13.5px; font-family: inherit;
+    background: var(--bg); color: var(--text); transition: border-color .15s;
+    resize: vertical;
+  }
+  input[type=text]:focus, textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .thai-input { font-family: 'Noto Sans Thai', sans-serif; font-size: 15px; }
+  .roman-input { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
+
+  /* vocab chip input */
+  .chip-area {
+    border: 1px solid var(--line); border-radius: 7px;
+    padding: 6px 8px; background: var(--bg);
+    display: flex; flex-wrap: wrap; gap: 5px; align-items: center;
+    cursor: text; min-height: 38px;
+    transition: border-color .15s;
+  }
+  .chip-area:focus-within { border-color: var(--accent); }
+  .chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--tag-bg); border-radius: 6px;
+    padding: 2px 7px 2px 8px; font-size: 12px;
+  }
+  .chip .thai-part { font-family: 'Noto Sans Thai', sans-serif; color: var(--text); }
+  .chip .eng-part { color: var(--muted); font-size: 11px; }
+  .chip-tts { background: none; border: none; cursor: pointer; font-size: 11px; padding: 0 1px; opacity: .6; }
+  .chip-tts:hover { opacity: 1; }
+  .chip-remove { background: none; border: none; cursor: pointer; color: var(--muted); font-size: 12px; line-height: 1; padding: 0; opacity: .5; }
+  .chip-remove:hover { opacity: 1; color: var(--accent); }
+  .chip-input {
+    border: none; background: none; outline: none;
+    font-size: 12.5px; font-family: inherit; min-width: 120px;
+    color: var(--text); padding: 2px 4px;
+  }
+  .chip-hint { font-size: 10.5px; color: var(--muted); margin-top: 3px; }
+
+  .btn-add {
+    background: var(--accent); color: #fff; border: none;
+    border-radius: 7px; padding: 9px 20px; font-size: 13px;
+    cursor: pointer; font-family: inherit; font-weight: 600;
+    transition: opacity .15s; margin-top: 4px;
+  }
+  .btn-add:hover { opacity: .88; }
+
+  /* ── Date Group ── */
+  .date-group { margin-bottom: 28px; }
+  .date-label {
+    font-size: 11px; font-weight: 600; color: var(--muted);
+    letter-spacing: .08em; text-transform: uppercase;
+    border-bottom: 1px solid var(--line); padding-bottom: 6px;
+    margin-bottom: 12px;
+  }
+
+  /* ── Sentence Card ── */
+  .sentence-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: start;
+  }
+  .sentence-main { min-width: 0; }
+  .sentence-thai {
+    font-family: 'Noto Sans Thai', sans-serif;
+    font-size: 16px; font-weight: 500; line-height: 1.5;
+    margin-bottom: 2px;
+  }
+  .sentence-roman {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px; color: #9a8878; margin-bottom: 3px;
+  }
+  .sentence-chinese { font-size: 13px; color: var(--muted); }
+
+  .vocab-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+  .vocab-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--tag-bg); border-radius: 6px;
+    padding: 3px 10px; font-size: 12px; cursor: pointer;
+    border: 1px solid transparent; transition: all .15s;
+    user-select: none;
+  }
+  .vocab-chip:hover { border-color: var(--accent2); background: #eef4f2; }
+  .vocab-chip.playing { border-color: var(--accent2); background: #eef4f2; color: var(--accent2); }
+  .vocab-thai { font-family: 'Noto Sans Thai', sans-serif; color: var(--text); font-weight: 500; }
+  .vocab-eng { color: var(--muted); font-size: 11px; }
+
+  .sentence-notes {
+    margin-top: 8px; font-size: 12.5px; color: var(--muted);
+    font-style: italic; border-left: 2px solid var(--line);
+    padding-left: 8px;
+  }
+
+  .card-actions { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  .tts-btn {
+    background: none; border: 1px solid var(--line); border-radius: 99px;
+    width: 30px; height: 30px; cursor: pointer; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s; color: var(--muted);
+  }
+  .tts-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+  .tts-btn.playing { border-color: var(--accent2); background: #eef4f2; }
+  .fav-btn {
+    background: none; border: 1px solid var(--line); border-radius: 99px;
+    width: 30px; height: 30px; cursor: pointer; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s; color: var(--muted);
+  }
+  .fav-btn.active { border-color: var(--accent3); color: var(--accent3); }
+  .del-btn {
+    background: none; border: 1px solid transparent;
+    border-radius: 99px; width: 28px; height: 28px; cursor: pointer;
+    font-size: 12px; display: flex; align-items: center; justify-content: center;
+    color: #ccc; transition: all .15s;
+  }
+  .del-btn:hover { color: #e05; border-color: #fcc; }
+
+  /* review rating on cards */
+  .review-info { font-size: 10.5px; color: var(--muted); margin-top: 6px; }
+  .review-info .next { color: var(--accent2); }
+
+  /* ── Page 2 Favorites ── */
+  .empty-state {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted); font-size: 13.5px;
+  }
+  .empty-state .big { font-size: 36px; margin-bottom: 12px; }
+
+  /* ── Page 3 Review ── */
+  .review-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 20px; flex-wrap: wrap; gap: 10px;
+  }
+  .review-title { font-size: 15px; font-weight: 600; }
+  .review-count { font-size: 13px; color: var(--muted); }
+
+  .review-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+  }
+  .review-card .sentence-thai { font-size: 18px; }
+
+  .rating-row {
+    display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;
+  }
+  .rating-btn {
+    border: 1px solid var(--line); background: var(--bg);
+    border-radius: 7px; padding: 7px 14px; font-size: 12.5px;
+    cursor: pointer; font-family: inherit; transition: all .15s;
+    color: var(--text);
+  }
+  .rating-btn:hover { transform: translateY(-1px); }
+  .rating-btn.r0 { border-color: #f0a0a0; }
+  .rating-btn.r0:hover { background: #fff0f0; }
+  .rating-btn.r1 { border-color: #f0c070; }
+  .rating-btn.r1:hover { background: #fff8e8; }
+  .rating-btn.r2 { border-color: #a0c8a0; }
+  .rating-btn.r2:hover { background: #eef5ee; }
+  .rating-btn.r3 { border-color: #a0c0e0; }
+  .rating-btn.r3:hover { background: #eef3f8; }
+
+  .review-done {
+    text-align: center; padding: 48px 20px; color: var(--muted);
+  }
+  .review-done .big { font-size: 40px; margin-bottom: 12px; }
+  .review-done p { font-size: 14px; }
+
+  .stats-row {
+    display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  }
+  .stat-box {
+    background: var(--card); border: 1px solid var(--line);
+    border-radius: 8px; padding: 12px 18px; text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .stat-box .num { font-size: 22px; font-weight: 600; color: var(--accent); }
+  .stat-box .lbl { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* TTS warning */
+  #tts-warning {
+    position: fixed; bottom: 20px; right: 20px;
+    background: #333; color: #fff; border-radius: 8px;
+    padding: 10px 16px; font-size: 12.5px; display: none; z-index: 999;
+    box-shadow: 0 4px 16px rgba(0,0,0,.2);
+  }
+
+  @media (max-width: 640px) {
+    header { flex-wrap: wrap; }
+    .form-row.cols2, .form-row.cols3 { grid-template-columns: 1fr; }
+    .page { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">🌿 Thai <span>Collector</span></div>
+  <a href="https://abbyyyli.github.io/thai-index/" style="font-size:11.5px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;transition:all .15s;white-space:nowrap" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--line)'">← 首頁</a>
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showPage(0)">收藏區</button>
+    <button class="tab-btn t2" onclick="showPage(1)">最愛 <span class="badge" id="fav-count">0</span></button>
+    <button class="tab-btn" onclick="showPage(2)">待複習 <span class="badge" id="review-count">0</span></button>
+  </div>
+  <div class="header-actions">
+    <button class="btn-sm" onclick="openPasteModal()">貼上 JSON</button>
+    <button class="btn-sm" onclick="exportData()">匯出</button>
+    <button class="btn-sm" onclick="document.getElementById('import-file').click()">匯入</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
+  </div>
+</header>
+
+<!-- Page 1: Collection -->
+<div class="page active" id="page-0">
+  <div class="add-form">
+    <h3>＋ 新增句子</h3>
+    <div class="form-row">
+      <div>
+        <label>日期</label>
+        <input type="text" id="f-date" class="roman-input" placeholder="2026-06-01">
+      </div>
+    </div>
+    <div class="form-row cols3">
+      <div>
+        <label>泰文句子</label>
+        <input type="text" id="f-thai" class="thai-input" placeholder="อยากตัดผมสั้นกว่านี้ค่ะ">
+      </div>
+      <div>
+        <label>拼音</label>
+        <input type="text" id="f-roman" class="roman-input" placeholder="yàak dtàt phǒm sân gwàa níi khâ">
+      </div>
+      <div>
+        <label>中文 / 英文</label>
+        <input type="text" id="f-chinese" placeholder="我想把頭髮剪得更短一點">
+      </div>
+    </div>
+    <div class="form-row cols2">
+      <div>
+        <label>重點單字 <small style="color:var(--muted);font-weight:400">（泰文:英文，按 Enter 加入）</small></label>
+        <div class="chip-area" id="chip-area" onclick="document.getElementById('chip-input').focus()">
+          <input type="text" id="chip-input" class="chip-input" placeholder="ตัด:cut">
+        </div>
+        <div class="chip-hint">格式：泰文:英文，例如 ตัด:cut ⏎　或只打泰文也可</div>
+      </div>
+      <div>
+        <label>筆記 <small style="color:var(--muted);font-weight:400">（選填）</small></label>
+        <textarea id="f-notes" rows="2" placeholder="語感、情境、注意事項..."></textarea>
+      </div>
+    </div>
+    <button class="btn-add" onclick="addSentence()">加入收藏</button>
+  </div>
+
+  <div id="collection-list"></div>
+</div>
+
+<!-- Page 2: Favorites -->
+<div class="page" id="page-1">
+  <div id="fav-list"></div>
+</div>
+
+<!-- Page 3: Review -->
+<div class="page" id="page-2">
+  <div class="stats-row" id="stats-row"></div>
+  <div id="review-list"></div>
+</div>
+
+<div id="tts-warning">⚠️ 請在 Chrome / Edge 使用以確保泰文 TTS 正常</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────
+const STORAGE_KEY = 'thai-collector-v1';
+let data = { sentences: [] };
+
+function load() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) { try { data = JSON.parse(raw); } catch(e) {} }
+}
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  updateBadges();
+}
+
+// ── SM-2 ─────────────────────────────────────────────────
+// rating: 0=忘了 1=模糊 2=記得 3=很熟
+function sm2(item, rating) {
+  const now = new Date();
+  const todayStr = toDateStr(now);
+
+  if (rating === 0) {
+    item.interval = 1;
+    item.ease = Math.max(1.3, (item.ease || 2.5) - 0.3);
+  } else if (rating === 1) {
+    item.interval = 1;
+    item.ease = Math.max(1.3, (item.ease || 2.5) - 0.15);
+  } else if (rating === 2) {
+    item.interval = item.interval <= 1 ? 3 : Math.round(item.interval * (item.ease || 2.5));
+    // ease unchanged
+  } else {
+    item.interval = item.interval <= 1 ? 4 : Math.round(item.interval * (item.ease || 2.5));
+    item.ease = Math.min(3.0, (item.ease || 2.5) + 0.1);
+  }
+
+  item.last_review = todayStr;
+  const next = new Date(now);
+  next.setDate(next.getDate() + item.interval);
+  item.next_review = toDateStr(next);
+  item.review_count = (item.review_count || 0) + 1;
+}
+
+function toDateStr(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+function isDueToday(item) {
+  if (!item.next_review) return true; // never reviewed
+  return item.next_review <= toDateStr(new Date());
+}
+
+// ── Tab ───────────────────────────────────────────────────
+function showPage(n) {
+  document.querySelectorAll('.page').forEach((p, i) => {
+    p.classList.toggle('active', i === n);
+  });
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', i === n);
+  });
+  if (n === 0) renderCollection();
+  if (n === 1) renderFavorites();
+  if (n === 2) renderReview();
+}
+
+// ── TTS ───────────────────────────────────────────────────
+function speak(text, btn) {
+  if (!('speechSynthesis' in window)) {
+    document.getElementById('tts-warning').style.display = 'block';
+    setTimeout(() => document.getElementById('tts-warning').style.display = 'none', 3000);
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'th-TH'; u.rate = 0.86;
+  if (btn) {
+    btn.classList.add('playing');
+    u.onend = () => btn.classList.remove('playing');
+    u.onerror = () => btn.classList.remove('playing');
+  }
+  window.speechSynthesis.speak(u);
+}
+
+// ── Add ───────────────────────────────────────────────────
+let pendingVocab = [];
+
+document.getElementById('chip-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    const val = e.target.value.trim();
+    if (!val) return;
+    addChip(val);
+    e.target.value = '';
+  }
+  if (e.key === 'Backspace' && e.target.value === '' && pendingVocab.length) {
+    pendingVocab.pop();
+    renderChips();
+  }
+});
+
+function addChip(val) {
+  const parts = val.split(':');
+  pendingVocab.push({ thai: parts[0].trim(), eng: parts[1]?.trim() || '' });
+  renderChips();
+}
+
+function renderChips() {
+  const area = document.getElementById('chip-area');
+  const input = document.getElementById('chip-input');
+  // Remove old chips
+  area.querySelectorAll('.chip').forEach(c => c.remove());
+  pendingVocab.forEach((v, i) => {
+    const chip = document.createElement('span');
+    chip.className = 'chip';
+    chip.innerHTML = `<span class="thai-part">${v.thai}</span>${v.eng ? `<span class="eng-part">${v.eng}</span>` : ''}
+      <button class="chip-remove" onclick="removeChip(${i})" title="移除">×</button>`;
+    area.insertBefore(chip, input);
+  });
+}
+
+function removeChip(i) {
+  pendingVocab.splice(i, 1);
+  renderChips();
+}
+
+function addSentence() {
+  const thai = document.getElementById('f-thai').value.trim();
+  const roman = document.getElementById('f-roman').value.trim();
+  const chinese = document.getElementById('f-chinese').value.trim();
+  const date = document.getElementById('f-date').value.trim() || toDateStr(new Date());
+  const notes = document.getElementById('f-notes').value.trim();
+
+  if (!thai) { alert('請輸入泰文句子'); return; }
+
+  const sentence = {
+    id: Date.now().toString(),
+    date,
+    thai, roman, chinese, notes,
+    vocab: [...pendingVocab],
+    favorite: false,
+    interval: 1,
+    ease: 2.5,
+    next_review: toDateStr(new Date()), // due immediately first time
+    last_review: null,
+    review_count: 0
+  };
+
+  data.sentences.unshift(sentence);
+  save();
+
+  // Reset
+  ['f-thai','f-roman','f-chinese','f-notes'].forEach(id => document.getElementById(id).value = '');
+  pendingVocab = [];
+  renderChips();
+  renderCollection();
+  updateBadges();
+}
+
+// ── Render Collection ─────────────────────────────────────
+function renderCollection() {
+  const list = document.getElementById('collection-list');
+  if (!data.sentences.length) {
+    list.innerHTML = '<div class="empty-state"><div class="big">📖</div>還沒有收藏的句子，新增第一句吧！</div>';
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  data.sentences.forEach(s => {
+    if (!groups[s.date]) groups[s.date] = [];
+    groups[s.date].push(s);
+  });
+
+  const sorted = Object.keys(groups).sort((a,b) => b.localeCompare(a));
+  list.innerHTML = sorted.map(date => `
+    <div class="date-group">
+      <div class="date-label">${date}</div>
+      ${groups[date].map(s => sentenceCard(s)).join('')}
+    </div>
+  `).join('');
+}
+
+function sentenceCard(s, showReviewInfo = false) {
+  const nextInfo = s.next_review ? `下次複習：${s.next_review}｜間隔 ${s.interval} 天` : '';
+  return `
+  <div class="sentence-card" id="card-${s.id}">
+    <div class="sentence-main">
+      <div class="sentence-thai">${s.thai}</div>
+      ${s.roman ? `<div class="sentence-roman">${s.roman}</div>` : ''}
+      ${s.chinese ? `<div class="sentence-chinese">${s.chinese}</div>` : ''}
+      ${s.vocab?.length ? `
+        <div class="vocab-row">
+          ${s.vocab.map(v => `
+            <span class="vocab-chip" onclick="speak('${v.thai}', this)">
+              <span class="vocab-thai">${v.thai}</span>
+              ${v.eng ? `<span class="vocab-eng">${v.eng}</span>` : ''}
+              </span>
+          `).join('')}
+        </div>
+      ` : ''}
+      ${s.notes ? `<div class="sentence-notes">${s.notes}</div>` : ''}
+      ${showReviewInfo && nextInfo ? `<div class="review-info"><span class="next">${nextInfo}</span>　複習 ${s.review_count} 次</div>` : ''}
+    </div>
+    <div class="card-actions">
+      <button class="tts-btn" onclick="speak('${s.thai}', this)" title="播放">🔊</button>
+      <button class="fav-btn ${s.favorite ? 'active' : ''}" onclick="toggleFav('${s.id}')" title="最愛">♥</button>
+      <button class="del-btn" onclick="deleteSentence('${s.id}')" title="刪除">✕</button>
+    </div>
+  </div>`;
+}
+
+// ── Render Favorites ──────────────────────────────────────
+function renderFavorites() {
+  const list = document.getElementById('fav-list');
+  const favs = data.sentences.filter(s => s.favorite);
+  if (!favs.length) {
+    list.innerHTML = '<div class="empty-state"><div class="big">♥</div>點句子旁的 ♥ 將它加入最愛</div>';
+    return;
+  }
+  list.innerHTML = favs.map(s => sentenceCard(s, true)).join('');
+}
+
+// ── Render Review ─────────────────────────────────────────
+function renderReview() {
+  const due = data.sentences.filter(s => isDueToday(s));
+  const total = data.sentences.length;
+  const reviewed = data.sentences.filter(s => s.last_review === toDateStr(new Date())).length;
+
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-box"><div class="num">${due.length}</div><div class="lbl">今日待複習</div></div>
+    <div class="stat-box"><div class="num">${reviewed}</div><div class="lbl">今日已複習</div></div>
+    <div class="stat-box"><div class="num">${total}</div><div class="lbl">總收藏句數</div></div>
+  `;
+
+  document.getElementById('review-count').textContent = due.length;
+
+  if (!due.length) {
+    document.getElementById('review-list').innerHTML = `
+      <div class="review-done">
+        <div class="big">✅</div>
+        <p>今天沒有待複習的句子！</p>
+        <p style="margin-top:6px;font-size:12.5px">繼續新增句子，之後會自動安排複習。</p>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('review-list').innerHTML = due.map(s => `
+    <div class="review-card" id="review-${s.id}">
+      <div class="sentence-thai">${s.thai}</div>
+      ${s.roman ? `<div class="sentence-roman" style="margin-top:4px">${s.roman}</div>` : ''}
+      ${s.chinese ? `<div class="sentence-chinese" style="margin-top:3px">${s.chinese}</div>` : ''}
+      ${s.vocab?.length ? `
+        <div class="vocab-row">
+          ${s.vocab.map(v => `
+            <span class="vocab-chip" onclick="speak('${v.thai}', this)">
+              <span class="vocab-thai">${v.thai}</span>
+              ${v.eng ? `<span class="vocab-eng">${v.eng}</span>` : ''}
+              </span>
+          `).join('')}
+        </div>
+      ` : ''}
+      ${s.notes ? `<div class="sentence-notes">${s.notes}</div>` : ''}
+      <div class="rating-row">
+        <button class="rating-btn r0" onclick="rate('${s.id}', 0)">😰 忘了</button>
+        <button class="rating-btn r1" onclick="rate('${s.id}', 1)">🤔 模糊</button>
+        <button class="rating-btn r2" onclick="rate('${s.id}', 2)">😊 記得</button>
+        <button class="rating-btn r3" onclick="rate('${s.id}', 3)">⭐ 很熟</button>
+        <button class="tts-btn" onclick="speak('${s.thai}', this)" style="margin-left:auto">🔊</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function rate(id, rating) {
+  const s = data.sentences.find(x => x.id === id);
+  if (!s) return;
+  sm2(s, rating);
+  save();
+  // Fade out card
+  const card = document.getElementById('review-' + id);
+  if (card) { card.style.opacity = '0.4'; card.style.pointerEvents = 'none'; }
+  setTimeout(() => renderReview(), 400);
+}
+
+// ── Actions ───────────────────────────────────────────────
+function toggleFav(id) {
+  const s = data.sentences.find(x => x.id === id);
+  if (!s) return;
+  s.favorite = !s.favorite;
+  save();
+  renderCollection();
+  renderFavorites();
+}
+
+function deleteSentence(id) {
+  if (!confirm('確定要刪除這句嗎？')) return;
+  data.sentences = data.sentences.filter(x => x.id !== id);
+  save();
+  renderCollection();
+  renderFavorites();
+}
+
+function updateBadges() {
+  const favs = data.sentences.filter(s => s.favorite).length;
+  const due = data.sentences.filter(s => isDueToday(s)).length;
+  document.getElementById('fav-count').textContent = favs;
+  document.getElementById('review-count').textContent = due;
+}
+
+// ── Export / Import ───────────────────────────────────────
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `thai-collector-${toDateStr(new Date())}.json`;
+  a.click();
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const imported = JSON.parse(ev.target.result);
+      if (!imported.sentences) throw new Error();
+      if (confirm(`匯入 ${imported.sentences.length} 句？（會合併到現有資料）`)) {
+        // Merge by id
+        const existing = new Set(data.sentences.map(s => s.id));
+        imported.sentences.forEach(s => {
+          if (!existing.has(s.id)) data.sentences.push(s);
+        });
+        save();
+        renderCollection();
+        alert('匯入完成！');
+      }
+    } catch {
+      alert('檔案格式錯誤');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+
+function openPasteModal() {
+  const m = document.getElementById('paste-modal');
+  m.style.display = 'flex';
+  setTimeout(() => document.getElementById('paste-input').focus(), 50);
+}
+function closePasteModal() {
+  document.getElementById('paste-modal').style.display = 'none';
+  document.getElementById('paste-input').value = '';
+  document.getElementById('paste-error').style.display = 'none';
+}
+function pasteImport() {
+  const raw = document.getElementById('paste-input').value.trim();
+  const errEl = document.getElementById('paste-error');
+  errEl.style.display = 'none';
+  try {
+    let parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) parsed = [parsed];
+    let added = 0;
+    parsed.forEach(s => {
+      if (!s.thai) return;
+      const item = {
+        id: Date.now().toString() + Math.random().toString(36).slice(2),
+        date: s.date || toDateStr(new Date()),
+        thai: s.thai || '', roman: s.roman || '',
+        chinese: s.chinese || '', notes: s.notes || '',
+        vocab: Array.isArray(s.vocab) ? s.vocab : [],
+        favorite: false, interval: 1, ease: 2.5,
+        next_review: toDateStr(new Date()),
+        last_review: null, review_count: 0
+      };
+      data.sentences.unshift(item);
+      added++;
+    });
+    save();
+    renderCollection();
+    closePasteModal();
+    alert('✅ 匯入 ' + added + ' 句！');
+  } catch(e) {
+    errEl.textContent = '格式錯誤，請確認是正確的 JSON array';
+    errEl.style.display = 'block';
+  }
+}
+// backdrop click
+document.addEventListener('click', function(e) {
+  const m = document.getElementById('paste-modal');
+  if (e.target === m) closePasteModal();
+});
+
+// ── Init ──────────────────────────────────────────────────
+load();
+document.getElementById('f-date').value = toDateStr(new Date());
+
+// Check TTS support
+setTimeout(() => {
+  if (!('speechSynthesis' in window)) {
+    document.getElementById('tts-warning').style.display = 'block';
+  }
+}, 1000);
+
+renderCollection();
+updateBadges();
+</script>
+
+<div id="paste-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center">
+  <div style="background:var(--card);border-radius:12px;padding:24px;width:min(560px,90vw);box-shadow:0 8px 32px rgba(0,0,0,.15)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div style="font-weight:600;font-size:14px">貼上 AI 整理的 JSON</div>
+      <button onclick="closePasteModal()" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--muted)">×</button>
+    </div>
+    <textarea id="paste-input" rows="10" style="width:100%;border:1px solid var(--line);border-radius:7px;padding:10px;font-family:'JetBrains Mono',monospace;font-size:12px;resize:vertical;background:var(--bg);color:var(--text)" placeholder="貼上 JSON array..."></textarea>
+    <div id="paste-error" style="color:#e05;font-size:12px;margin-top:6px;display:none"></div>
+    <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end">
+      <button onclick="closePasteModal()" class="btn-sm">取消</button>
+      <button onclick="pasteImport()" class="btn-add" style="margin-top:0">匯入</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
