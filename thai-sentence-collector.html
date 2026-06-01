@@ -307,7 +307,6 @@
 
 <header>
   <div class="logo">🌿 Thai <span>Collector</span></div>
-  <a href="https://abbyyyli.github.io/thai-index/" style="font-size:11.5px;color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:5px 10px;transition:all .15s;white-space:nowrap" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='var(--muted)';this.style.borderColor='var(--line)'">← 首頁</a>
   <div class="tabs">
     <button class="tab-btn active" onclick="showPage(0)">收藏區</button>
     <button class="tab-btn t2" onclick="showPage(1)">最愛 <span class="badge" id="fav-count">0</span></button>
@@ -317,6 +316,7 @@
     <button class="btn-sm" onclick="openPasteModal()">貼上 JSON</button>
     <button class="btn-sm" onclick="exportData()">匯出</button>
     <button class="btn-sm" onclick="document.getElementById('import-file').click()">匯入</button>
+    <a href="https://github.com/abbyyyli/thai-index" target="_blank" class="btn-sm" style="text-decoration:none">🗂️ GitHub</a>
     <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(event)">
   </div>
 </header>
