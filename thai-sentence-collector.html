@@ -851,6 +851,7 @@ function saveEdit() {
   save();
   renderCollection();
   renderFavorites();
+  renderReview();
   closeEditModal();
 }
 
@@ -883,5 +884,62 @@ updateBadges();
     </div>
   </div>
 </div>
+
+
+<div id="edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:220;align-items:center;justify-content:center;padding:18px">
+  <div style="background:var(--card);border-radius:12px;padding:24px;width:min(720px,94vw);max-height:88vh;overflow:auto;box-shadow:0 8px 32px rgba(0,0,0,.15);border:1px solid var(--line)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:12px">
+      <div>
+        <div style="font-weight:600;font-size:15px">編輯收藏句子</div>
+        <div style="font-size:11.5px;color:var(--muted);margin-top:2px">只更新文字內容，不會重設複習進度。</div>
+      </div>
+      <button onclick="closeEditModal()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--muted);line-height:1">×</button>
+    </div>
+
+    <input type="hidden" id="edit-id">
+
+    <div class="form-row">
+      <div>
+        <label>日期</label>
+        <input type="text" id="edit-date" class="roman-input" placeholder="2026-06-01">
+      </div>
+    </div>
+
+    <div class="form-row cols3">
+      <div>
+        <label>泰文</label>
+        <input type="text" id="edit-thai" class="thai-input" placeholder="泰文句子">
+      </div>
+      <div>
+        <label>拼音</label>
+        <input type="text" id="edit-roman" class="roman-input" placeholder="romanization">
+      </div>
+      <div>
+        <label>中文</label>
+        <input type="text" id="edit-chinese" placeholder="中文意思">
+      </div>
+    </div>
+
+    <div class="form-row cols2">
+      <div>
+        <label>重點單字 <small style="color:var(--muted);font-weight:400">（泰文:英文，按 Enter 加入）</small></label>
+        <div class="chip-area" id="edit-chip-area" onclick="document.getElementById('edit-chip-input').focus()">
+          <input type="text" id="edit-chip-input" class="chip-input" placeholder="ตัด:cut">
+        </div>
+        <div class="chip-hint">Enter 加入；輸入框空白時按 Backspace 刪除最後一個 chip。</div>
+      </div>
+      <div>
+        <label>筆記</label>
+        <textarea id="edit-notes" rows="4" placeholder="語感、情境、注意事項..."></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;margin-top:14px;justify-content:flex-end">
+      <button onclick="closeEditModal()" class="btn-sm">取消</button>
+      <button onclick="saveEdit()" class="btn-add" style="margin-top:0">儲存修改</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
