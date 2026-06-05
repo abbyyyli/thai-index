@@ -711,14 +711,36 @@ function importData(e) {
       const imported = JSON.parse(ev.target.result);
       if (!imported.sentences) throw new Error();
       if (confirm(`匯入 ${imported.sentences.length} 句？（會合併到現有資料）`)) {
-        // Merge by id
-        const existing = new Set(data.sentences.map(s => s.id));
+        // Merge by id + update review progress
+        const index = new Map(data.sentences.map(s => [s.id, s]));
+        let added = 0;
+        let updated = 0;
+
         imported.sentences.forEach(s => {
-          if (!existing.has(s.id)) data.sentences.push(s);
+          if (!s.id) {
+            s.id = Date.now().toString() + Math.random().toString(36).slice(2);
+          }
+
+          if (index.has(s.id)) {
+            const local = index.get(s.id);
+
+            // If the imported item has newer review progress, update the local item.
+            if ((s.review_count || 0) > (local.review_count || 0)) {
+              Object.assign(local, s);
+              updated++;
+            }
+          } else {
+            data.sentences.push(s);
+            index.set(s.id, s);
+            added++;
+          }
         });
+
         save();
         renderCollection();
-        alert('匯入完成！');
+        renderFavorites();
+        renderReview();
+        alert(`匯入完成！新增 ${added} 句，更新複習進度 ${updated} 句。`);
       }
     } catch {
       alert('檔案格式錯誤');
