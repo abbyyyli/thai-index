@@ -523,6 +523,7 @@ function addSentence() {
     thai, roman, chinese, notes,
     vocab: [...pendingVocab],
     favorite: false,
+    favorite_updated_at: null,
     interval: 1,
     ease: 2.5,
     next_review: toDateStr(new Date()), // due immediately first time
@@ -673,6 +674,7 @@ function toggleFav(id) {
   const s = data.sentences.find(x => x.id === id);
   if (!s) return;
   s.favorite = !s.favorite;
+  s.favorite_updated_at = new Date().toISOString();
   save();
   renderCollection();
   renderFavorites();
@@ -702,6 +704,27 @@ function exportData() {
   a.click();
 }
 
+function mergeFavoriteState(local, incoming) {
+  const localFav = !!local.favorite;
+  const incomingFav = !!incoming.favorite;
+  const localTime = local.favorite_updated_at || '';
+  const incomingTime = incoming.favorite_updated_at || '';
+
+  // If both sides have timestamps, the newer favorite action wins.
+  if (localTime || incomingTime) {
+    if (incomingTime && (!localTime || incomingTime > localTime)) {
+      local.favorite = incomingFav;
+      local.favorite_updated_at = incomingTime;
+    } else {
+      local.favorite = localFav;
+      local.favorite_updated_at = localTime || null;
+    }
+  } else {
+    // Old exported files have no timestamp. Preserve any existing favorite to avoid accidental loss.
+    local.favorite = localFav || incomingFav;
+  }
+}
+
 function importData(e) {
   const file = e.target.files[0];
   if (!file) return;
@@ -711,10 +734,11 @@ function importData(e) {
       const imported = JSON.parse(ev.target.result);
       if (!imported.sentences) throw new Error();
       if (confirm(`匯入 ${imported.sentences.length} 句？（會合併到現有資料）`)) {
-        // Merge by id + update review progress
+        // Merge by id + update review progress + favorite state
         const index = new Map(data.sentences.map(s => [s.id, s]));
         let added = 0;
         let updated = 0;
+        let favUpdated = 0;
 
         imported.sentences.forEach(s => {
           if (!s.id) {
@@ -723,13 +747,24 @@ function importData(e) {
 
           if (index.has(s.id)) {
             const local = index.get(s.id);
+            const beforeFav = !!local.favorite;
 
-            // If the imported item has newer review progress, update the local item.
+            // If the imported item has newer review progress, update review/text data.
             if ((s.review_count || 0) > (local.review_count || 0)) {
+              const localFavoriteSnapshot = {
+                favorite: local.favorite,
+                favorite_updated_at: local.favorite_updated_at
+              };
               Object.assign(local, s);
+              local.favorite = localFavoriteSnapshot.favorite;
+              local.favorite_updated_at = localFavoriteSnapshot.favorite_updated_at;
               updated++;
             }
+
+            mergeFavoriteState(local, s);
+            if (beforeFav !== !!local.favorite) favUpdated++;
           } else {
+            if (s.favorite_updated_at === undefined) s.favorite_updated_at = null;
             data.sentences.push(s);
             index.set(s.id, s);
             added++;
@@ -740,7 +775,7 @@ function importData(e) {
         renderCollection();
         renderFavorites();
         renderReview();
-        alert(`匯入完成！新增 ${added} 句，更新複習進度 ${updated} 句。`);
+        alert(`匯入完成！新增 ${added} 句，更新複習進度 ${updated} 句，更新最愛 ${favUpdated} 句。`);
       }
     } catch {
       alert('檔案格式錯誤');
@@ -777,7 +812,7 @@ function pasteImport() {
         thai: s.thai || '', roman: s.roman || '',
         chinese: s.chinese || '', notes: s.notes || '',
         vocab: Array.isArray(s.vocab) ? s.vocab : [],
-        favorite: false, interval: 1, ease: 2.5,
+        favorite: false, favorite_updated_at: null, interval: 1, ease: 2.5,
         next_review: toDateStr(new Date()),
         last_review: null, review_count: 0
       };
