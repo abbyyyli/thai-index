@@ -1,1 +1,390 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>พูดได้เลย · Study Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Noto+Sans+TC:wght@300;400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
 
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{--bg:#F4EFE5;--bgc:#FDFAF4;--bgh:#F8F3E8;--sb:#163326;--sbh:#1F4535;--sba:#2A5C44;--sbt:#B5D4C0;--sbti:#E8F5EC;--acc:#C89A3A;--accl:rgba(200,154,58,.12);--gd:#1B4332;--gm:#2D6A4F;--gl:#52B788;--thai:#1B4332;--rom:#5F8C74;--t:#1A1A1A;--tm:#3A3A3A;--mu:#717171;--bd:#DDD6C8;--bdl:#EDE8DE;--ft:'Sarabun',sans-serif;--fz:'Noto Sans TC',sans-serif;--fu:'Inter',sans-serif;}
+html,body{height:100%;}body{font-family:var(--fu);background:var(--bg);color:var(--t);}
+.top{position:fixed;top:0;left:0;right:0;height:52px;z-index:100;background:var(--gd);display:flex;align-items:center;justify-content:space-between;padding:0 16px;box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.top-l{display:flex;align-items:center;gap:10px;}.burg{background:none;border:none;color:#fff;font-size:18px;cursor:pointer;padding:4px 8px;border-radius:4px;}.burg:hover{background:rgba(255,255,255,.1);}
+.top-title{font-family:var(--ft);font-size:22px;font-weight:700;color:#fff;}.top-sub{font-family:var(--fz);font-size:11px;color:rgba(255,255,255,.55);margin-left:4px;}
+.top-r{display:flex;gap:6px;}.cbtn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 11px;border-radius:6px;cursor:pointer;font-size:12px;font-family:var(--fu);transition:all .15s;white-space:nowrap;}.cbtn:hover{background:rgba(255,255,255,.22);}.cbtn.on{background:var(--acc);border-color:var(--acc);}.cbtn:focus-visible,.lbtn:focus-visible,.sb-btn:focus-visible,.filter-btn:focus-visible,.abtn:focus-visible,.xbtn:focus-visible,.burg:focus-visible{outline:2px solid #fff;outline-offset:2px;}
+.lay{display:flex;margin-top:52px;height:calc(100vh - 52px);}
+.sb{width:258px;flex-shrink:0;background:var(--sb);overflow-y:auto;overflow-x:hidden;transition:width .22s;scrollbar-width:thin;scrollbar-color:var(--sba) var(--sb);}
+.sb.col{width:0;}.sb-book{padding:18px 16px 12px;border-bottom:1px solid rgba(255,255,255,.07);}
+.sb-th{font-family:var(--ft);font-size:26px;font-weight:700;color:var(--sbti);}.sb-zh{font-family:var(--fz);font-size:10px;color:var(--sbt);margin-top:3px;opacity:.75;}.sb-ct{font-size:10px;color:var(--acc);font-weight:700;margin-top:8px;}.sb-track{height:4px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;margin-top:7px;}.sb-track-fill{height:100%;width:0;background:var(--acc);border-radius:inherit;transition:width .25s ease;}.sb-actions,.sb-filter{display:flex;gap:6px;margin-top:9px;}.sb-btn,.filter-btn{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:var(--sbt);font-family:var(--fz);font-size:10px;line-height:1;padding:6px 8px;border-radius:6px;cursor:pointer;transition:all .15s;}.sb-btn:hover,.filter-btn:hover,.filter-btn.on{background:var(--sba);border-color:rgba(255,255,255,.32);color:var(--sbti);}.sb-btn{color:rgba(255,255,255,.65);}.sb-save-note{font-family:var(--fz);font-size:9px;line-height:1.45;color:rgba(181,212,192,.5);margin-top:8px;}.nit-b{min-width:34px;}
+.nav-grp{padding:6px 0;}.nav-lbl{font-size:9px;font-weight:700;letter-spacing:1.5px;color:rgba(181,212,192,.4);padding:8px 16px 3px;text-transform:uppercase;}
+.nit{display:flex;align-items:center;gap:9px;padding:8px 16px;cursor:pointer;color:var(--sbt);font-size:12.5px;transition:background .12s;border-left:3px solid transparent;user-select:none;}.nit:hover{background:var(--sbh);}.nit.act{background:var(--sba);border-left-color:var(--acc);color:var(--sbti);}
+.nit-em{width:18px;text-align:center;flex-shrink:0;font-size:14px;}.nit-tx{flex:1;min-width:0;}
+.nit-t{font-family:var(--fz);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}.nit-s{font-family:var(--ft);font-size:10.5px;opacity:.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.nit-b{flex-shrink:0;min-width:20px;height:17px;padding:0 5px;background:rgba(255,255,255,.07);border-radius:9px;font-size:10px;text-align:center;line-height:17px;color:rgba(255,255,255,.4);}
+.nprog{height:2px;background:rgba(255,255,255,.07);margin:2px 16px 0;border-radius:1px;}.nprog-b{height:100%;background:var(--acc);transition:width .3s;border-radius:1px;}
+.cnt{flex:1;overflow-y:auto;overflow-x:hidden;padding:24px;scroll-behavior:smooth;}
+.sec-hd{display:flex;align-items:center;gap:14px;margin-bottom:18px;padding-bottom:10px;border-bottom:2px solid var(--bd);}
+.sec-n{font-family:var(--ft);font-size:46px;font-weight:700;color:var(--bdl);line-height:1;letter-spacing:-2px;}.sec-tts{flex:1;}
+.sec-tzh{font-family:var(--fz);font-size:21px;font-weight:600;}.sec-tth{font-family:var(--ft);font-size:15px;color:var(--mu);margin-top:2px;}
+.sec-chip{font-size:10px;background:var(--accl);color:var(--acc);border:1px solid rgba(200,154,58,.3);padding:3px 10px;border-radius:20px;font-weight:700;}.sec-blk{margin-bottom:38px;}
+.qc{background:var(--bgc);border:1px solid var(--bdl);border-radius:10px;margin-bottom:10px;box-shadow:0 1px 3px rgba(0,0,0,.06);transition:box-shadow .2s;overflow:hidden;}.qc.filtered-out,.sec-blk.filtered-out{display:none!important;}
+.qc:hover{box-shadow:0 3px 10px rgba(0,0,0,.09);}.qc.lrn{border-left:3px solid var(--gl);}
+.qch{display:flex;align-items:flex-start;gap:11px;padding:15px 15px 13px;cursor:pointer;transition:background .12s;}.qch:hover{background:var(--bgh);}
+.qcn{flex-shrink:0;width:34px;height:34px;background:var(--gd);color:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;margin-top:1px;transition:background .2s;}.qc.lrn .qcn{background:var(--gl);}
+.qcq{flex:1;min-width:0;}.qcth{font-family:var(--ft);font-size:20px;font-weight:500;color:var(--thai);line-height:1.4;}
+.qcro{font-family:var(--ft);font-size:12.5px;color:var(--rom);font-style:italic;margin-top:2px;}.qczh{font-family:var(--fz);font-size:13px;color:var(--mu);margin-top:3px;}
+.hid{display:none!important;}.qca{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.abtn{width:33px;height:33px;border-radius:50%;border:none;cursor:pointer;background:var(--gd);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;flex-shrink:0;}.abtn:hover{background:var(--gm);transform:scale(1.06);}.abtn.pl{background:var(--acc);animation:pulse 1s infinite;}
+.xbtn{width:27px;height:27px;border-radius:50%;border:1px solid var(--bd);background:transparent;cursor:pointer;color:var(--mu);display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s;}.xbtn:hover{background:var(--bdl);}.qc.exp .xbtn{transform:rotate(180deg);}
+.qcb{max-height:0;overflow:hidden;transition:max-height .32s ease;}.qc.exp .qcb{max-height:900px;}.qcbi{padding:0 15px 15px;}.div{height:1px;background:var(--bdl);margin:0 -15px 14px;}
+.ans{display:flex;align-items:flex-start;gap:11px;padding:9px 11px;border-radius:8px;background:rgba(27,67,50,.04);margin-bottom:8px;}
+.anl{flex-shrink:0;width:23px;height:23px;border-radius:50%;background:var(--gd);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:2px;}
+.ant{flex:1;min-width:0;}.anth{font-family:var(--ft);font-size:18px;font-weight:500;color:var(--thai);line-height:1.4;}
+.anro{font-family:var(--ft);font-size:11.5px;color:var(--rom);font-style:italic;margin-top:2px;}.anzh{font-family:var(--fz);font-size:12px;color:var(--mu);margin-top:3px;}
+.subs{margin-top:11px;}.sub-lbl{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;}
+.sub-chips{display:flex;flex-wrap:wrap;gap:5px;}.schip{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:18px;cursor:pointer;background:transparent;border:1px solid var(--bd);transition:all .15s;}.schip:hover{background:var(--accl);border-color:var(--acc);}
+.sch-th{font-family:var(--ft);color:var(--thai);font-size:14px;}.sch-zh{font-family:var(--fz);color:var(--mu);font-size:11px;}
+.fu{margin-top:13px;padding:9px 11px;border-radius:8px;background:rgba(200,154,58,.08);border-left:3px solid var(--acc);}
+.fu-lbl{font-size:9px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}.fu-row{display:flex;align-items:flex-start;gap:9px;}.fu-tx{flex:1;}
+.futh{font-family:var(--ft);font-size:17px;color:var(--thai);}.furo{font-family:var(--ft);font-size:11.5px;color:var(--rom);font-style:italic;margin-top:2px;}.fuzh{font-family:var(--fz);font-size:12px;color:var(--mu);margin-top:3px;}
+.notes{margin-top:13px;display:flex;flex-direction:column;gap:7px;}.note{padding:9px 11px;border-radius:8px;}
+.ng{background:rgba(82,183,136,.07);border:1px solid rgba(82,183,136,.18);}.ng-l{font-size:9px;font-weight:700;color:var(--gm);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}.ng-t{font-family:var(--ft);font-size:13.5px;color:var(--tm);line-height:1.65;}
+.nc{background:rgba(52,82,220,.04);border:1px solid rgba(52,82,220,.1);}.nc-l{font-size:9px;font-weight:700;color:#4A5ADB;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}.nc-t{font-family:var(--fz);font-size:12.5px;color:var(--tm);line-height:1.7;}
+.cft{display:flex;align-items:center;justify-content:flex-end;margin-top:13px;padding-top:9px;border-top:1px solid var(--bdl);}
+.lbtn{display:flex;align-items:center;gap:5px;padding:5px 13px;border-radius:18px;border:1px solid var(--bd);background:transparent;font-size:11px;color:var(--mu);cursor:pointer;font-family:var(--fz);transition:all .15s;}.lbtn:hover{border-color:var(--gl);color:var(--gm);}.lbtn.dn{background:var(--gl);border-color:var(--gl);color:#fff;}
+.apx{margin-bottom:38px;}.apx-hd{display:flex;align-items:center;gap:12px;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid var(--bd);}
+.apx-ic{font-size:26px;}.apx-tit{flex:1;}.apx-tzh{font-family:var(--fz);font-size:19px;font-weight:600;}.apx-tth{font-family:var(--ft);font-size:13px;color:var(--mu);margin-top:2px;}
+.plist{display:flex;flex-direction:column;gap:7px;}.prow{display:flex;align-items:flex-start;gap:11px;padding:9px 13px;border-radius:8px;background:var(--bgc);border:1px solid var(--bdl);}
+.pnum{flex-shrink:0;width:21px;height:21px;border-radius:50%;background:var(--bdl);color:var(--mu);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-top:2px;}
+.ptx{flex:1;}.pth{font-family:var(--ft);font-size:17px;color:var(--thai);line-height:1.4;}.prom{font-family:var(--ft);font-size:11.5px;color:var(--rom);font-style:italic;margin-top:2px;}.pzh{font-family:var(--fz);font-size:12px;color:var(--mu);margin-top:3px;}
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:7px;}
+.vc{padding:10px 12px;border-radius:8px;background:var(--bgc);border:1px solid var(--bdl);cursor:pointer;transition:all .15s;}.vc:hover{border-color:var(--gl);}
+.vth{font-family:var(--ft);font-size:19px;color:var(--thai);font-weight:500;}.vro{font-family:var(--ft);font-size:11px;color:var(--rom);font-style:italic;margin-top:2px;}.vzh{font-family:var(--fz);font-size:11.5px;color:var(--mu);margin-top:3px;}
+.fgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:7px;}
+.fc{padding:9px 11px;border-radius:8px;background:var(--bgc);border:1px solid var(--bdl);cursor:pointer;transition:all .15s;text-align:center;}.fc:hover{border-color:var(--acc);}
+.fth{font-family:var(--ft);font-size:16px;color:var(--thai);font-weight:500;}.fro{font-family:var(--ft);font-size:10.5px;color:var(--rom);font-style:italic;margin-top:2px;}.fzh{font-family:var(--fz);font-size:11.5px;color:var(--mu);margin-top:3px;}
+.lgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:14px;}
+.lcard{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;background:var(--bgc);border:1px solid var(--bdl);cursor:pointer;transition:all .15s;}.lcard:hover{border-color:var(--gl);}
+.lth{font-family:var(--ft);font-size:15px;color:var(--thai);}.lzh{font-family:var(--fz);font-size:11px;color:var(--mu);}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:7px;}
+.pc{padding:11px;border-radius:8px;background:var(--bgc);border:1px solid var(--bdl);text-align:center;}
+.pton{font-family:var(--ft);font-size:26px;color:var(--thai);font-weight:600;}.ptro{font-family:var(--ft);font-size:11px;color:var(--rom);font-style:italic;margin-top:2px;}.ptzh{font-family:var(--fz);font-size:12.5px;font-weight:600;color:var(--t);margin-top:4px;}.ptuse{font-family:var(--fz);font-size:10.5px;color:var(--mu);margin-top:2px;line-height:1.4;}
+.parlist{display:flex;flex-direction:column;gap:7px;}
+.parrow{display:grid;grid-template-columns:65px 85px 1fr;align-items:center;gap:11px;padding:9px 13px;border-radius:8px;background:var(--bgc);border:1px solid var(--bdl);cursor:pointer;}.parrow:hover{border-color:var(--acc);}
+.par-th{font-family:var(--ft);font-size:21px;color:var(--acc);font-weight:700;}.par-ro{font-family:var(--ft);font-size:11px;color:var(--rom);font-style:italic;}
+.par-zh{font-family:var(--fz);font-size:13px;font-weight:600;color:var(--t);}.par-ex{font-family:var(--ft);font-size:13px;color:var(--mu);margin-top:2px;}
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:7px;}
+.scard{padding:11px;border-radius:8px;background:var(--bgc);border:1px solid var(--bdl);cursor:pointer;transition:all .15s;}.scard:hover{border-color:var(--gl);}
+.sth{font-family:var(--ft);font-size:19px;color:var(--thai);font-weight:600;}.sro{font-family:var(--ft);font-size:11px;color:var(--rom);font-style:italic;margin-top:2px;}.szh{font-family:var(--fz);font-size:12.5px;color:var(--t);font-weight:500;margin-top:4px;}.sex{font-family:var(--fz);font-size:11px;color:var(--mu);margin-top:2px;}
+.hlist{display:flex;flex-direction:column;gap:9px;}.hrow{display:flex;gap:11px;padding:11px 13px;background:var(--bgc);border:1px solid var(--bdl);border-radius:8px;}
+.hn{flex-shrink:0;width:23px;height:23px;border-radius:50%;background:var(--acc);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;}
+.htx{flex:1;}.htt{font-family:var(--fz);font-size:13.5px;font-weight:600;}.hte{font-family:var(--ft);font-size:14.5px;color:var(--thai);margin-top:3px;}.htz{font-family:var(--fz);font-size:11.5px;color:var(--mu);margin-top:2px;}
+.chgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:7px;}
+.chrow{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;border-radius:8px;background:var(--bgc);border:1px solid var(--bdl);}
+.ch-th{font-family:var(--ft);font-size:17px;color:var(--thai);}.ch-zh{font-family:var(--fz);font-size:11px;color:var(--mu);margin-top:2px;}
+.sslbl{display:flex;align-items:center;gap:8px;margin:14px 0 9px;font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.9px;}.sslbl::after{content:"";flex:1;height:1px;background:var(--bdl);}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,154,58,.45);}50%{box-shadow:0 0 0 6px rgba(200,154,58,0);}}
+@media(max-width:768px){.lay{height:calc(100dvh - 52px);}.sb{position:fixed;top:52px;left:0;bottom:0;z-index:50;transform:translateX(-100%);width:260px;}.sb.col{width:260px;overflow-y:auto;}.sb.mob-open{transform:translateX(0);box-shadow:4px 0 20px rgba(0,0,0,.3);}.cnt{padding:14px;}.top-sub{display:none;}.lgrid{grid-template-columns:1fr;}.parrow{grid-template-columns:55px 70px 1fr;}}
+@media(max-width:480px){.top{padding:0 8px;}.top-l{gap:4px;}.top-title{font-size:19px;}.top-r{gap:4px;}.cbtn{padding:5px 7px;font-size:11px;}.qch{padding:13px 11px 12px;gap:8px;}.qca{gap:5px;}.qcbi{padding-left:11px;padding-right:11px;}.sec-hd{gap:9px;}.sec-n{font-size:38px;}.sec-tzh{font-size:18px;}.sec-chip{font-size:9px;padding:3px 7px;}}
+@media(min-width:769px){.sb{transform:none!important;}.sb.col{width:0;overflow:hidden;}}
+.cnt::-webkit-scrollbar{width:5px;}.cnt::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px;}
+
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="top-l"><button class="burg" onclick="toggleSB()">☰</button><span class="top-title">พูดได้เลย</span><span class="top-sub">50個泰國人一定會跟你聊的話題</span></div>
+    <div class="top-r"><button class="cbtn on" id="btnR" onclick="toggleRom()" aria-pressed="true" title="顯示／隱藏羅馬拼音">拼音 ✓</button><button class="cbtn" id="btnS" onclick="toggleSpd()" aria-pressed="false" title="切換慢速播放">🐢 慢速</button></div>
+  </header>
+  <div class="lay">
+    <nav id="sb" class="sb"></nav>
+    <main id="cnt" class="cnt"></main>
+  </div>
+</div>
+<script type="application/json" id="jd">{"q":[{"i":"Q01","q":["คุณชื่ออะไรครับ","khun chʉ̂ʉ à-rai khráp","你叫什麼名字？"],"a":[["ฉันชื่อ ___ ค่ะ","chǎn chʉ̂ʉ ___ khâ","我叫〔名字〕。"],["เรียกฉันว่า ___ ก็ได้ค่ะ","rîiak chǎn wâa ___ gɔ̂ɔ dâai khâ","叫我〔小名〕就好。"]],"s":[["มิง","小明"],["ฟาง","小芳"],["เจย์","Jay"]],"f":["แล้วคุณล่ะคะ ชื่ออะไรคะ","lɛ́ɛw khun lâ khá · chʉ̂ʉ à-rai khá","那你呢，你叫什麼名字？"],"g":"ชื่อ = 名字 ／ เรียกว่า = 叫做 ／ ก็ได้ = 也可以","t":"c","n":"泰國人日常幾乎只用「ชื่อเล่น（小名）」互稱，全名又長又難記。可以用中文諧音取泰文小名，例如「小明 → มิง」！"},{"i":"Q02","q":["คุณมาจากไหนครับ","khun maa jàak nǎi khráp","你從哪裡來？"],"a":[["ฉันมาจากไต้หวันค่ะ","chǎn maa jàak dtâi-wǎn khâ","我來自台灣。"],["มาจากฮ่องกงค่ะ","maa jàak hɔ̀ng-gong khâ","來自香港。"]],"s":[["ไทเป","台北"],["เกาสง","高雄"],["ไถจง","台中"],["ไถหนาน","台南"]],"f":["คุณเคยไปไต้หวันไหมคะ","khun khəəy bpai dtâi-wǎn mǎi khá","你有去過台灣嗎？"],"g":"มาจาก = 來自 ／ ไหน = 哪裡（疑問詞放句尾）","t":"l","n":"泰文問地點用 ไหน，永遠放在句尾。มาจากไหน（從哪來）、อยู่ที่ไหน（在哪）、ไปไหน（去哪）——規律一致，很好記！"},{"i":"Q03","q":["อายุเท่าไหร่ครับ","aa-yú thâo-rài khráp","你幾歲？"],"a":[["อายุ 24 ปีค่ะ","aa-yú yîi-sìp-sìi bpii khâ","我〔24〕歲。"],["24 ค่ะ","yîi-sìp-sìi khâ","〔24〕歲。（口語簡答）"]],"s":[["20 ปี","20歲"],["25 ปี","25歲"],["30 ปี","30歲"]],"f":["แล้วคุณล่ะคะ","lɛ́ɛw khun lâ khá","那你呢？"],"g":"เท่าไหร่ = 多少 ／ ปี = 年/歲（量詞）／ เพิ่งครบ = 剛滿","t":"l","n":"回答年齡結構是 อายุ + 數字 + ปี，主詞可省略。泰國人問年齡非常自然，不含任何冒犯意味！"},{"i":"Q04","q":["คุณมาคนเดียวหรอครับ","khun maa khon dǐaw rɔ̌ɔ khráp","你一個人來嗎？"],"a":[["ใช่ค่ะ มาคนเดียว","châi khâ · maa khon dǐaw","是的，我一個人來。"],["ไม่ใช่ค่ะ มากับเพื่อน","mâi châi khâ · maa gàp phʉ̂an","不是的，和朋友一起來。"]],"s":[["ครอบครัว","家人"],["แฟน","另一半"],["เพื่อนร่วมงาน","同事"]],"f":["คุณมากับใครคะ","khun maa gàp khrai khá","你和誰一起來的？"],"g":"คนเดียว = 一個人 ／ มากับ = 和⋯⋯一起來 ／ หรอ = 輕疑問語氣（比ไหม更口語）","t":"c","n":"泰國人對一個人旅行的外國人特別熱情，通常會主動聊更多，甚至帶你去吃好吃的！"},{"i":"Q05","q":["คุณมาเที่ยวหรือมาทำงานครับ","khun maa thîiao rʉ̌ʉ maa tham ngaan khráp","你來玩還是來工作？"],"a":[["มาเที่ยวค่ะ","maa thîiao khâ","來旅遊的。"],["มาทั้งเที่ยวและทำงานค่ะ","maa tháng thîiao lɛ́ tham ngaan khâ","我是來旅遊跟工作的（兩者都有）。"]],"s":[["มาเรียน","來讀書"],["มาฝึกงาน","來實習"]],"f":["ทำงานด้านอะไรคะ","tham ngaan dâan à-rai khá","你是哪個領域的工作？"],"g":"หรือ = 還是（二選一問句）／ ทั้ง...และ... = 既⋯⋯又⋯⋯","t":"l","n":"หรือ 用於二選一問句，ทั้ง...และ... 表示「兩者都有」。掌握這兩個結構，面對各種選擇類問題都能自然回答！"},{"i":"Q06","q":["นี่เป็นครั้งแรกที่มาไทยไหมครับ","nîi bpen khráng rɛ̂ɛk thîi maa thai mǎi khráp","這是你第一次來泰國嗎？"],"a":[["ใช่ค่ะ มาครั้งแรกเลย","châi khâ · maa khráng rɛ̂ɛk ləəy","是的，我是第一次來。"],["ไม่ใช่ค่ะ มาแล้วหลายครั้ง","mâi châi khâ · maa lɛ́ɛw lǎai khráng","不是的，已經來過很多次了。"]],"s":[["มาครั้งที่สอง","第二次"],["มาบ่อยมาก","來很多次"]],"f":["ชอบไทยไหมคะ","chɔ̂ɔp thai mǎi khá","你喜歡泰國嗎？"],"g":"ครั้งแรก = 第一次 ／ หลายครั้ง = 很多次","t":"c","n":"告訴泰國人這是你「第一次」來，他們會非常熱情地給你建議，甚至主動帶路——這是最好的搭話開場白之一！"},{"i":"Q07","q":["คุณอยู่ที่ไหนในไต้หวันครับ","khun yùu thîi nǎi nai dtâi-wǎn khráp","你住在台灣哪裡？"],"a":[["อยู่ที่ไทเปค่ะ","yùu thîi thai-bpay khâ","我住台北。"],["อยู่แถวๆ ไทเปค่ะ","yùu thɛ̌ɛw thɛ̌ɛw thai-bpay khâ","在台北附近。"]],"s":[["เกาสง","高雄"],["ไถจง","台中"],["ไถหนาน","台南"]],"f":["คุณเคยได้ยินเกาสงไหมคะ","khun khəəy dâai yin gao-sɔ̌ɔng mǎi khá","你有聽說過高雄嗎？"],"g":"อยู่ที่ = 住在 ／ แถวๆ = 附近一帶","t":"c","n":"台灣城市的泰文讀法：台北 ไทเป、高雄 เกาสง、台中 ไถจง、台南 ไถหนาน。說出城市泰文名，泰國人會覺得你很用心！"},{"i":"Q08","q":["คุณมีแฟนยังครับ","khun mii fɛɛn yang khráp","你有男／女朋友嗎？"],"a":[["มีค่ะ","mii khâ","有對象了。"],["ยังไม่มีค่ะ","yang mâi mii khâ","目前還沒有。"]],"s":[["เพิ่งเลิกกันมาค่ะ","剛分手"],["แต่งงานแล้วค่ะ","已經結婚了"]],"f":["แฟนเป็นคนไทยไหมคะ","fɛɛn bpen khon thai mǎi khá","你的另一半是泰國人嗎？"],"g":"ยัง 放句尾 = 「還⋯⋯嗎？」 ／ ยังไม่มี = 還沒有","t":"c","n":"泰國人初次見面就問感情狀況，完全正常，是表達友善的方式。大方回答就好——往往是聊天的好起點！"},{"i":"Q09","q":["คุณแต่งงานหรือยังครับ","khun dtɛ̀ɛng ngaan rʉ̌ʉ yang khráp","你結婚了嗎？"],"a":[["แต่งงานแล้วค่ะ","dtɛ̀ɛng ngaan lɛ́ɛw khâ","已經結婚了。"],["ยังไม่ได้แต่งงานค่ะ","yang mâi dâai dtɛ̀ɛng ngaan khâ","我還沒結婚。"]],"s":[["กำลังจะแต่งงานค่ะ","我要結婚了"],["หย่าแล้วค่ะ","已經離婚了"]],"f":["แต่งงานมานานแค่ไหนแล้วคะ","dtɛ̀ɛng ngaan maa naan khɛ̂ɛ nǎi lɛ́ɛw khá","結婚多久了？"],"g":"แล้ว = 已經（完成貌）／ ยัง...ไม่ได้ = 還沒⋯⋯ ／ กำลังจะ = 即將","t":"l","n":"แล้ว 放動詞後表示完成，ยัง...ไม่ได้ 表示「還沒做到」。這兩個是日常對話中出現頻率極高的必學核心結構！"},{"i":"Q10","q":["คุณมีลูกไหมครับ","khun mii lûuk mǎi khráp","你有小孩嗎？"],"a":[["มีค่ะ มี 2 คน","mii khâ · mii sɔ̌ɔng khon","有，有〔2〕個孩子。"],["ยังไม่มีค่ะ","yang mâi mii khâ","還沒有。"]],"s":[["1 คน","1個"],["3 คน","3個"],["ยังไม่คิดจะมีค่ะ","還沒打算"]],"f":["ลูกอายุเท่าไหร่แล้วคะ","lûuk aa-yú thâo-rài lɛ́ɛw khá","孩子幾歲了？"],"g":"ลูก = 孩子 ／ ___ คน = ⋯⋯個（人的量詞）","t":"c","n":"泰國人問小孩是日常寒暄，和台灣長輩問「結婚了嗎？」一樣自然。若尚未打算，說 ยังไม่คิดจะมีค่ะ 輕鬆帶過即可。"},{"i":"Q11","q":["คุณมาอยู่กี่วันคะ","khun maa yùu gìi wan khá","你來幾天？"],"a":[["มาอยู่ 5 วันครับ","maa yùu hâa wan khráp","我會待〔5〕天。"],["มาอยู่อาทิตย์นึงครับ","maa yùu aa-thít nʉ̀ng khráp","會待一個星期。"]],"s":[["3 วัน","3天"],["10 วัน","10天"],["แค่สามวัน","只有3天"]],"f":["แล้วจะไปไหนบ้างครับ","lɛ́ɛw jà bpai nǎi bâang khráp","那要去哪些地方呢？"],"g":"กี่วัน = 幾天 ／ อาทิตย์นึง = 一個星期 ／ แค่ = 只/僅","t":"c","n":"告訴對方你待幾天，泰國人通常會立刻熱心推薦景點與餐廳——這是他們表達友善的方式！"},{"i":"Q12","q":["คุณพักอยู่ที่ไหนคะ","khun phák yùu thîi nǎi khá","你住在哪裡？"],"a":[["พักอยู่ที่โรงแรม ___ ครับ","phák yùu thîi roong-rɛɛm ___ khráp","我住在〔飯店名〕。"],["พักอยู่แถวสุขุมวิทครับ","phák yùu thɛ̌ɛw sù-khùm-wít khráp","我住在素坤逸一帶。"]],"s":[["โฮสเทล","青年旅館"],["บ้านเพื่อน","朋友家"]],"f":["โรงแรมดีไหมครับ","roong-rɛɛm dii mǎi khráp","飯店好嗎？"],"g":"พักอยู่ที่ = 住在（強調暫住）／ แถว = 附近一帶","t":"c","n":"住在曼谷說出地鐵站名效果最好，例如「แถวอโศก（Asok附近）」，泰國人馬上知道你在哪區。"},{"i":"Q13","q":["คุณไปไหนมาบ้างคะ","khun bpai nǎi maa bâang khá","你去過哪些地方了？"],"a":[["ไปวัดพระแก้วมาแล้วครับ","bpai wát-phrá-gɛ̂ɛw maa lɛ́ɛw khráp","我已經去過玉佛寺了。"],["ยังไม่ได้ไปไหนเลยครับ เพิ่งมาถึง","yang mâi dâai bpai nǎi ləəy khráp","還沒去哪裡，才剛到。"]],"s":[["แยกอโศก","阿索克"],["สยาม","Siam"],["เยาวราช","唐人街"],["จตุจักร","恰圖恰"]],"f":["อยากไปไหนอีกบ้างครับ","yàak bpai nǎi ìik bâang khráp","還想去哪裡嗎？"],"g":"บ้าง 放句尾 = 「有⋯⋯嗎（開放列舉）」 ／ มาแล้ว = 已去過","t":"c","n":"วัดพระแก้ว（玉佛寺）是曼谷最神聖的寺廟，供奉著以翡翠雕成的玉佛。提到它，泰國人馬上知道你認真在旅遊！"},{"i":"Q14","q":["คุณชอบไทยไหมคะ","khun chɔ̂ɔp thai mǎi khá","你喜歡泰國嗎？"],"a":[["ชอบมากเลยครับ","chɔ̂ɔp mâak ləəy khráp","非常喜歡！"],["ชอบครับ โดยเฉพาะอาหาร","chɔ̂ɔp khráp · dooi chà-phɔ́ aa-hǎan","很喜歡，特別是食物。"]],"s":[["ชอบนะครับ แต่ร้อนไปหน่อย","喜歡，但有點太熱"],["โดยเฉพาะคนไทย","特別是泰國人"]],"f":["ชอบอะไรในไทยมากที่สุดครับ","chɔ̂ɔp à-rai nai thai mâak thîi sùt khráp","你最喜歡泰國的什麼？"],"g":"ชอบ = 喜歡 ／ โดยเฉพาะ = 尤其是 ／ ไปหน่อย = 有點太⋯⋯","t":"l","n":"โดยเฉพาะ 後面接你最想強調的事物，這個結構說出來非常地道自然。記住它，你的泰語立刻升一個等級！"},{"i":"Q15","q":["อากาศที่นี่เป็นยังไงบ้างคะ","aa-gàat thîi nîi bpen yang-ngai bâang khá","你覺得這裡天氣怎麼樣？"],"a":[["ร้อนกว่าไต้หวันเยอะเลยครับ","rɔ́ɔn gwàa dtâi-wǎn yə́ ləəy khráp","比台灣熱多了。"],["ร้อนครับ แต่ชินแล้ว","rɔ́ɔn khráp · dtɛ̀ɛ chǐn lɛ́ɛw","很熱，但已經習慣了。"]],"s":[["ร้อนไปหน่อยครับ","有點太熱了"],["ชอบอากาศแบบนี้ครับ","喜歡這種天氣"]],"f":["ที่ไต้หวันอากาศเป็นยังไงครับ","thîi dtâi-wǎn aa-gàat bpen yang-ngai khráp","台灣的天氣怎麼樣？"],"g":"กว่า = 比（比較級）／ ชินแล้ว = 已習慣了 ／ เป็นยังไง = 怎麼樣（口語問句）","t":"l","n":"กว่า 加在形容詞後表比較級，เยอะ 或 มาก 加強「差很多」的語感。例：ร้อนกว่าเยอะ = 熱很多。"},{"i":"Q16","q":["คุณจะไปไหนต่อคะ","khun jà bpai nǎi dtɔ̀ɔ khá","你接下來要去哪裡？"],"a":[["จะไปเชียงใหม่ครับ","jà bpai chǐiang-mài khráp","我要去清邁。"],["จะกลับบ้านแล้วครับ","jà glàp bâan lɛ́ɛw khráp","我要回家了。"]],"s":[["ยังไม่ได้วางแผนเลยครับ","還沒計畫好"],["เกาะสมุย","蘇梅島"],["ภูเก็ต","普吉島"]],"f":["เคยไปเชียงใหม่ไหมครับ","khəəy bpai chǐiang-mài mǎi khráp","你去過清邁嗎？"],"g":"จะ = 將要（未來式）／ กลับบ้าน = 回家 ／ ต่อ = 接著/繼續","t":"c","n":"說「ยังไม่ได้วางแผน（還沒計畫）」是打開建議話題的好方法。泰國人熱愛分享旅遊資訊，這句話說出去會收到很多在地推薦！"},{"i":"Q17","q":["คุณซื้ออะไรไปฝากบ้างไหมคะ","khun sʉ́ʉ à-rai bpai fàak bâang mǎi khá","你有買東西帶回去嗎？"],"a":[["ซื้อของฝากเยอะเลยครับ","sʉ́ʉ khɔ̌ɔng fàak yə́ ləəy khráp","買了很多伴手禮。"],["ซื้อยาดมกับมะม่วงอบแห้งครับ","sʉ́ʉ yaa dom gàp má-mûang òp hɛ̂ɛng khráp","買了鼻通和芒果乾。"]],"s":[["ยาดม","鼻通"],["มะม่วงอบแห้ง","芒果乾"],["ครีมนวด","按摩膏"]],"f":["ซื้อให้ใครครับ","sʉ́ʉ hâi khrai khráp","買給誰的？"],"g":"ของฝาก = 伴手禮 ／ ไปฝาก = 買去送人 ／ อบแห้ง = 乾燥","t":"c","n":"ยาดม（鼻通）是台灣人到泰國必買的伴手禮，泰國人看到台灣人買這個都會會心一笑——這個梗兩邊都懂！"},{"i":"Q18","q":["คุณจะกลับมาอีกไหมคะ","khun jà glàp maa ìik mǎi khá","你還會再來嗎？"],"a":[["กลับมาแน่นอนครับ","glàp maa nɛ̂ɛ-nɔɔn khráp","我一定會回來的。"],["คิดว่าจะกลับมาครับ","khít wâa jà glàp maa khráp","我想我會再回來的。"]],"s":[["ถ้ามีโอกาสก็จะกลับมาครับ","如果有機會的話"],["ปีหน้าจะกลับมาครับ","明年會再來"]],"f":["ครั้งหน้าอยากมาช่วงไหนครับ","khráng nâa yàak maa chûang nǎi khráp","下次想在什麼季節來？"],"g":"แน่นอน = 當然/一定 ／ คิดว่า = 認為/想 ／ ช่วง = 時段/季節","t":"l","n":"กลับมาแน่นอน 是泰國人最愛聽的一句話，說出來對方會非常高興，通常接著問你下次要去哪——完美收尾！"},{"i":"Q19","q":["คุณกินเผ็ดได้ไหมครับ","khun gin phèt dâai mǎi khráp","你可以吃辣嗎？"],"a":[["กินได้ค่ะ ชอบด้วย","gin dâai khâ · chɔ̂ɔp dûay","可以吃，還很喜歡呢。"],["กินได้นิดหน่อยค่ะ","gin dâai nít nɔ̀i khâ","可以吃一點點。"]],"s":[["กินไม่ค่อยได้ค่ะ","不太能吃辣"],["กินได้มากเลยค่ะ","我很能吃辣"]],"f":["ชอบกินเผ็ดแค่ไหนคะ","chɔ̂ɔp gin phèt khɛ̂ɛ nǎi khá","你喜歡吃多辣？"],"g":"กินได้ = 可以吃 ／ ชอบด้วย = 還喜歡 ／ แค่ไหน = 多⋯⋯（程度問）","t":"c","n":"點餐時說「ไม่เผ็ด」= 不辣，或「เผ็ดน้อย」= 少辣。泰國廚師對外國客人說這句話都很習慣，一定會配合！"},{"i":"Q20","q":["คุณกินอาหารไทยเป็นครั้งแรกไหมครับ","khun gin aa-hǎan thai bpen khráng rɛ̂ɛk mǎi khráp","這是你第一次吃泰國菜嗎？"],"a":[["ใช่ค่ะ ครั้งแรกเลย","châi khâ · khráng rɛ̂ɛk ləəy","是的，是第一次。"],["ไม่ใช่ค่ะ กินบ่อยที่ไต้หวัน","mâi châi khâ · gin bɔ̀i thîi dtâi-wǎn","不是，在台灣經常吃。"]],"s":[["กินมาหลายครั้งแล้วค่ะ","已吃過很多次了"]],"f":["คุณชอบอาหารอะไรบ้างคะ","khun chɔ̂ɔp aa-hǎan à-rai bâang khá","你喜歡吃什麼泰國菜呢？"],"g":"เป็นครั้งแรก = 是第一次 ／ บ่อย = 經常 ／ เลย 放句尾 = 加強語氣","t":"l","n":"說「第一次」用 เป็นครั้งแรก 放在句尾，或直接說 ครั้งแรกเลย 加強語氣。非常自然的口語說法！"},{"i":"Q21","q":["คุณชอบกินอะไรครับ","khun chɔ̂ɔp gin à-rai khráp","你喜歡吃什麼？"],"a":[["ชอบกินผัดไทยค่ะ","chɔ̂ɔp gin phàt thai khâ","我喜歡吃泰式炒河粉。"],["กินได้ทุกอย่างค่ะ ไม่เลือก","gin dâai thúk yàang khâ · mâi lʉ̂ak","什麼都吃，我不挑食。"]],"s":[["ต้มยำกุ้ง","冬蔭功湯"],["ข้าวมันไก่","海南雞飯"],["ส้มตำ","青木瓜沙拉"],["แกงเขียวหวาน","綠咖哩"]],"f":["แนะนำร้านอาหารอร่อยๆ ให้หน่อยได้ไหมคะ","nɛ́ɛ-nam ráan aa-hǎan à-rɔ̀i hâi nɔ̀i dâai mǎi khá","可以推薦一家好吃的餐廳給我嗎？"],"g":"ชอบกิน = 喜歡吃 ／ ทุกอย่าง = 什麼都/全部 ／ ไม่เลือก = 不挑食","t":"c","n":"ผัดไทย 是外國人對泰國菜的第一印象，說你喜歡這道菜，泰國人立刻有話題聊！"},{"i":"Q22","q":["คุณแพ้อาหารอะไรไหมครับ","khun phɛ́ɛ aa-hǎan à-rai mǎi khráp","你有食物過敏嗎？"],"a":[["แพ้อาหารทะเลค่ะ","phɛ́ɛ aa-hǎan thá-lee khâ","我對海鮮過敏。"],["ไม่แพ้อะไรค่ะ กินได้ทุกอย่าง","mâi phɛ́ɛ à-rai khâ · gin dâai thúk yàang","我沒有過敏，什麼都能吃。"]],"s":[["ถั่ว","堅果/豆類"],["กลูเตน","麩質"],["นม","牛奶"]],"f":["มีเมนูที่ไม่มีอาหารทะเลได้ไหมคะ","mii mee-nuu thîi mâi mii aa-hǎan thá-lee dâai mǎi khá","有不含海鮮的菜單嗎？"],"g":"แพ้ = 過敏 ／ อาหารทะเล = 海鮮 ／ ถั่ว = 豆類/堅果","t":"c","n":"泰國料理大量使用花生、蝦醬、魚露，有過敏問題務必事先說清楚。建議把過敏食物泰文名稱記下來，點餐時直接指給廚師看。"},{"i":"Q23","q":["อร่อยไหมครับ","à-rɔ̀i mǎi khráp","好吃嗎？"],"a":[["อร่อยมากเลยค่ะ","à-rɔ̀i mâak ləəy khâ","非常好吃！"],["อร่อยที่สุดเลยค่ะ กินได้อีก","à-rɔ̀i thîi sùt ləəy khâ · gin dâai ìik","是最好吃的！還可以再來一碗。"]],"s":[["โอเคค่ะ ไม่ได้ดีมาก","還好"],["หวานไปหน่อยค่ะ","有點太甜了"]],"f":["ที่นี่อร่อยที่สุดในไทยเลยนะคะ","thîi nîi à-rɔ̀i thîi sùt nai thai ləəy ná khá","這裡是泰國最好吃的！"],"g":"อร่อย = 好吃 ／ ที่สุด = 最（最高級）／ กินได้อีก = 還可以再吃","t":"l","n":"形容詞 + ที่สุด = 最⋯⋯，是泰文最高級的固定句型。อร่อยที่สุด 是讓廚師最開心的一句話！"},{"i":"Q24","q":["คุณกินหมูได้ไหมครับ","khun gin mǔu dâai mǎi khráp","你可以吃豬肉嗎？"],"a":[["กินได้ค่ะ กินได้ทุกอย่าง","gin dâai khâ · gin dâai thúk yàang","可以，什麼都能吃。"],["ไม่กินค่ะ ทานมังสวิรัติ","mâi gin khâ · thaan mang-sà-wí-rát","我不吃，我吃素。"]],"s":[["นับถือศาสนาอิสลามค่ะ","我信伊斯蘭教"],["กินเจค่ะ","我吃齋"]],"f":["มีเมนูมังสวิรัติไหมคะ","mii mee-nuu mang-sà-wí-rát mǎi khá","有素食菜單嗎？"],"g":"ทาน = 吃（比กิน更禮貌）／ มังสวิรัติ = 素食","t":"c","n":"泰國素食餐廳（ร้านเจ）非常普遍。看到黃底紅字的「เจ」招牌，就是素食/齋食餐廳。"},{"i":"Q25","q":["คุณดื่มเหล้าได้ไหมครับ","khun dʉ̀ʉm lâo dâai mǎi khráp","你可以喝酒嗎？"],"a":[["ดื่มได้ค่ะ คอแข็ง","dʉ̀ʉm dâai khâ · khɔɔ-khɛ̌ɛng","可以喝，我酒量很好。"],["กินเหล้าไม่เก่งค่ะ คออ่อน","gin lâo mâi gèng khâ · khɔɔ-ɔ̀ɔn","我不太會喝酒，酒量很差。"]],"s":[["ไม่ดื่มค่ะ","我不喝酒"],["ดื่มได้นิดหน่อยค่ะ","可以喝一點點"]],"f":["ชอบเบียร์หรือสุราคะ","chɔ̂ɔp biia rʉ̌ʉ sù-raa khá","你喜歡啤酒還是烈酒？"],"g":"ดื่ม = 喝（液體）／ คอแข็ง = 酒量好（喉嚨硬）／ คออ่อน = 酒量差（喉嚨軟）","t":"l","n":"คอแข็ง／คออ่อน（喉嚨硬／軟）是泰國人形容酒量的慣用語，生動又有趣！"},{"i":"Q26","q":["คุณชอบผลไม้ไทยไหมครับ","khun chɔ̂ɔp phǒn-lá-máai thai mǎi khráp","你喜歡泰國水果嗎？"],"a":[["ชอบมากค่ะ โดยเฉพาะมะม่วง","chɔ̂ɔp mâak khâ · dooi chà-phɔ́ má-mûang","非常喜歡，特別是芒果。"],["ยังไม่ค่อยได้ลองค่ะ","yang mâi khɔ̂i dâai lɔɔng khâ","還沒怎麼試過。"]],"s":[["ชอบทุกอย่างยกเว้นทุเรียนค่ะ","除了榴槤都喜歡"],["มะม่วง","芒果"],["มังคุด","山竹"]],"f":["ไม่ชอบทุเรียนหรอคะ ทำไมคะ","mâi chɔ̂ɔp thú-riian rɔ̌ɔ khá · tham-mai khá","你不喜歡榴槤嗎？為什麼？"],"g":"ยังไม่ค่อยได้ = 還沒怎麼⋯⋯ ／ ลอง = 嘗試 ／ ยกเว้น = 除了⋯⋯以外","t":"c","n":"說你不喜歡榴槤，泰國人通常笑著說「正常啦！」；說你喜歡，對方反而驚訝又開心。兩種回答都是很好的對話起點！"},{"i":"Q27","q":["คุณทำงานอะไรคะ","khun tham ngaan à-rai khá","你做什麼工作？"],"a":[["ทำงานเป็นพนักงานบริษัทครับ","tham ngaan bpen phá-nák-ngaan bɔɔ-rí-sàt khráp","我是上班族。"],["ทำฟรีแลนซ์ครับ","tham free-lɛɛns khráp","我是自由工作者。"]],"s":[["ครู","老師"],["นักเรียน","學生"],["เจ้าของกิจการ","老闆"]],"f":["คุณทำงานด้านอะไรครับ","khun tham ngaan dâan à-rai khráp","你是哪個領域的工作？"],"g":"ทำงานเป็น = 工作是⋯⋯ ／ พนักงานบริษัท = 上班族 ／ ด้าน = 領域","t":"l","n":"泰文問職業是「ทำงานอะไร（做什麼工作）」，強調「做的事」而不是「身分」，比中文更動態自然。"},{"i":"Q28","q":["คุณเรียนอยู่หรือทำงานแล้วคะ","khun riian yùu rʉ̌ʉ tham ngaan lɛ́ɛw khá","你在讀書還是已經在工作了？"],"a":[["ทำงานแล้วครับ","tham ngaan lɛ́ɛw khráp","已經在工作了。"],["ทำงานไปด้วยเรียนไปด้วยครับ","tham ngaan bpai dûay · riian bpai dûay khráp","我一邊工作一邊讀書。"]],"s":[["เรียนอยู่ครับ","還在讀書"],["เพิ่งเรียนจบครับ","剛畢業"]],"f":["เรียนอยู่ที่ไหนครับ","riian yùu thîi nǎi khráp","你在哪裡讀書？"],"g":"อยู่ 放動詞後 = 進行貌 ／ ...ไปด้วย...ไปด้วย = 一邊⋯⋯一邊⋯⋯","t":"c","n":"泰國大學生打工非常普遍，說「ทำงานไปด้วยเรียนไปด้วย」，泰國人馬上理解並認為你很努力！"},{"i":"Q29","q":["คุณพูดภาษาไทยได้ไหมคะ","khun phûut phaa-sǎa thai dâai mǎi khá","你會說泰語嗎？"],"a":[["พูดได้นิดหน่อยครับ","phûut dâai nít nɔ̀i khráp","會說一點點。"],["พูดได้ครับ กำลังเรียนอยู่","phûut dâai khráp · gam-lang riian yùu","會說，正在學習中。"]],"s":[["พูดไม่ค่อยได้ครับ แต่พยายามอยู่","說得不好，但在努力"],["เพิ่งเริ่มเรียนครับ","剛開始學"]],"f":["เรียนมานานแค่ไหนแล้วครับ","riian maa naan khɛ̂ɛ nǎi lɛ́ɛw khráp","你學多久了？"],"g":"พูดได้ = 會說 ／ กำลัง...อยู่ = 正在⋯⋯（進行中）","t":"c","n":"只要說出幾句泰語，泰國人就會非常驚喜並熱情回應。就算說得不好，他們也會鼓勵你——開口是最重要的第一步！"},{"i":"Q30","q":["คุณเรียนภาษาไทยที่ไหนคะ","khun riian phaa-sǎa thai thîi nǎi khá","你在哪裡學泰語？"],"a":[["เรียนออนไลน์ครับ","riian on-lai khráp","我在線上學。"],["เรียนที่ไทยครับ","riian thîi thai khráp","在泰國學的。"]],"s":[["เรียนเองจาก YouTube ครับ","自己從YouTube學"],["เรียนกับครูเอกชนครับ","跟私人老師學"]],"f":["ภาษาไทยยากไหมครับ","phaa-sǎa thai yâak mǎi khráp","泰語難嗎？"],"g":"เรียนที่ = 在⋯⋯學 ／ ออนไลน์ = 線上 ／ เรียนเอง = 自學","t":"l","n":"泰國人對「外國人用什麼方式學泰語」很好奇，說明學習方式往往能引發更深的對話！"},{"i":"Q31","q":["คุณเรียนภาษาไทยมานานแค่ไหนแล้วคะ","khun riian phaa-sǎa thai maa naan khɛ̂ɛ nǎi lɛ́ɛw khá","你學泰語學多久了？"],"a":[["เรียนมาได้ประมาณหนึ่งปีแล้วครับ","riian maa dâai bprà-maan nʉ̀ng bpii lɛ́ɛw khráp","大概學了一年了。"],["เพิ่งเริ่มเรียนได้สามเดือนครับ","phə̂ng rə̂əm riian dâai sǎam dʉan khráp","才剛開始學，學了三個月。"]],"s":[["หกเดือน","6個月"],["สองปี","2年"],["สามปีกว่า","3年多"]],"f":["ภาษาไทยยากไหมสำหรับคนไต้หวันครับ","phaa-sǎa thai yâak mǎi sǎm-ràp khon dtâi-wǎn khráp","泰語對台灣人來說難嗎？"],"g":"มานานแค่ไหน = 多久了 ／ ประมาณ = 大概 ／ เพิ่งเริ่ม = 才剛開始","t":"c","n":"告訴泰國人你學了多久，他們通常會說「เก่งมากเลย（好厲害）」——無論你說幾個月，這都是鼓勵的慣用語！"},{"i":"Q32","q":["อากาศที่ไต้หวันเป็นยังไงคะ","aa-gàat thîi dtâi-wǎn bpen yang-ngai khá","台灣的天氣怎麼樣？"],"a":[["มีสี่ฤดูครับ แตกต่างจากไทยมาก","mii sìi rʉ́-duu khráp · dtɛ̀ɛk dtàang jàak thai mâak","有四個季節，跟泰國很不一樣。"],["หน้าร้อนร้อนมาก หน้าหนาวก็หนาวพอสมควรครับ","nâa rɔ́ɔn rɔ́ɔn mâak · nâa nǎaw gɔ̂ɔ nǎaw phɔɔ-sǒm-khuan khráp","夏天很熱，冬天也蠻冷的。"]],"s":[["ชื้นกว่าไทยครับ","比泰國濕"],["มีฝนเยอะครับ","雨很多"]],"f":["อยากไปไต้หวันตอนไหนดีที่สุดครับ","yàak bpai dtâi-wǎn dtɔɔn nǎi dii thîi sùt khráp","什麼時候去台灣最好？"],"g":"สี่ฤดู = 四個季節 ／ แตกต่างจาก = 和⋯⋯不同 ／ พอสมควร = 蠻⋯⋯的","t":"c","n":"泰國只有三季：熱季、雨季、涼季。告訴泰國人台灣有「四季」，他們通常很羨慕，因為沒見過真正的冬天！"},{"i":"Q33","q":["อาหารไต้หวันอร่อยไหมคะ","aa-hǎan dtâi-wǎn à-rɔ̀i mǎi khá","台灣的食物好吃嗎？"],"a":[["อร่อยมากครับ โดยเฉพาะอาหารข้างทาง","à-rɔ̀i mâak khráp · dooi chà-phɔ́ aa-hǎan khâang thaang","很好吃，尤其是路邊攤。"],["คุณน่าจะชอบนะครับ ลองไปกินดูได้เลย","khun nâa jà chɔ̂ɔp ná khráp · lɔɔng bpai gin duu dâai ləəy","你應該會喜歡的，可以去試試看！"]],"s":[["ไนท์มาร์เก็ต","夜市"],["เต้าหู้เหม็น","臭豆腐"],["ชาไข่มุก","珍珠奶茶"]],"f":["คุณอยากลองกินอาหารไต้หวันไหมคะ","khun yàak lɔɔng gin aa-hǎan dtâi-wǎn mǎi khá","你想試試台灣食物嗎？"],"g":"อาหารข้างทาง = 路邊攤食物 ／ น่าจะ = 應該會⋯⋯ ／ ลองดู = 試試看","t":"c","n":"泰國人很好奇台灣夜市，說到「ไนท์มาร์เก็ต」他們馬上有反應！"},{"i":"Q34","q":["คุณชอบอยู่ไต้หวันไหมคะ","khun chɔ̂ɔp yùu dtâi-wǎn mǎi khá","你喜歡住在台灣嗎？"],"a":[["ชอบครับ สะดวกสบายดี","chɔ̂ɔp khráp · sà-dùak sà-baai dii","喜歡，生活很便利舒適。"],["ชอบนะครับ แต่คิดถึงอาหารไทยบ้างเหมือนกัน","chɔ̂ɔp ná khráp · dtɛ̀ɛ khít thʉ̌ng aa-hǎan thai bâang mʉ̌an gan","喜歡，但有時還是想念泰國食物。"]],"s":[["คนไทยในไต้หวันเยอะขึ้นครับ","台灣的泰國人越來越多"]],"f":["ชีวิตที่ไต้หวันเป็นยังไงบ้างครับ","chǐi-wít thîi dtâi-wǎn bpen yang-ngai bâang khráp","在台灣的生活怎麼樣？"],"g":"สะดวกสบาย = 便利舒適 ／ คิดถึง = 想念 ／ เหมือนกัน = 也/同樣（放句尾）","t":"c","n":"說「คิดถึงอาหารไทย（想念泰國食物）」是讓泰國人超級有共鳴的一句話——食物是他們的驕傲！"},{"i":"Q35","q":["คุณว่างไหมครับ","khun wâang mǎi khráp","你有空嗎？"],"a":[["ว่างค่ะ ทำไมคะ","wâang khâ · tham-mai khá","有空，怎麼了嗎？"],["ไม่ค่อยว่างค่ะ","mâi khɔ̂i wâang khâ","不太有空。"]],"s":[["ว่างตอนเย็นค่ะ","傍晚有空"],["วันนี้ไม่ว่างเลยค่ะ","今天完全沒空"]],"f":["ไปกินข้าวด้วยกันไหมคะ","bpai gin khâaw dûay gan mǎi khá","要一起去吃飯嗎？"],"g":"ว่าง = 有空 ／ ทำไม = 為什麼/怎麼了 ／ ไม่ค่อย = 不太","t":"c","n":"泰國人問有沒有空，通常緊接著說要做什麼。回答 ว่างค่ะ ทำไมคะ（有空，怎麼了）是最自然的接話！"},{"i":"Q36","q":["ไปกินข้าวด้วยกันไหมครับ","bpai gin khâaw dûay gan mǎi khráp","要一起去吃飯嗎？"],"a":[["ไปค่ะ ไปที่ไหนดีคะ","bpai khâ · bpai thîi nǎi dii khá","去啊！要去哪裡好呢？"],["ยินดีเลยค่ะ","yin-dii ləəy khâ","非常樂意！"]],"s":[["ขอบคุณค่ะ แต่วันนี้ไม่ว่างค่ะ","謝謝，但今天沒空"]],"f":["แล้วพรุ่งนี้ล่ะคะ ว่างไหมคะ","lɛ́ɛw phrûng-níi lâ khá · wâang mǎi khá","那明天呢？有空嗎？"],"g":"ด้วยกัน = 一起 ／ ยินดี = 樂意 ／ ล่ะ 放句尾 = 「那⋯⋯呢？」","t":"l","n":"ไปค่ะ ไปที่ไหนดีคะ 是最地道的答應邀約方式——答應的同時馬上問去哪，讓對話自然繼續不冷場！"},{"i":"Q37","q":["คุณชอบเพลงไทยไหมครับ","khun chɔ̂ɔp phleeng thai mǎi khráp","你喜歡泰國歌嗎？"],"a":[["ชอบค่ะ โดยเฉพาะลูกทุ่ง","chɔ̂ɔp khâ · dooi chà-phɔ́ lûuk thûng","喜歡，尤其是泰國鄉村樂。"],["ยังไม่ค่อยรู้จักค่ะ","yang mâi khɔ̂i rúu-jàk khâ","還不太認識泰國歌。"]],"s":[["ชอบค่ะ แนะนำศิลปินไทยให้หน่อยได้ไหมคะ","喜歡，可以推薦泰國歌手嗎？"]],"f":["ชอบดนตรีแนวไหนคะ","chɔ̂ɔp don-dtrii nɛɛw nǎi khá","你喜歡哪種音樂風格？"],"g":"เพลงไทย = 泰國歌 ／ ลูกทุ่ง = 泰國鄉村樂 ／ ยังไม่ค่อยรู้จัก = 還不太認識","t":"c","n":"說你喜歡泰國歌，泰國人會非常驚喜。能說出幾個歌手名字（例如 MILLI、Palmy、Bird Thongchai）對話立刻熱烈！"},{"i":"Q38","q":["ชอบดูซีรีส์ไทยไหมครับ","chɔ̂ɔp duu sii-rîi thai mǎi khráp","你喜歡看泰劇嗎？"],"a":[["ชอบมากค่ะ ชอบดูซีรีส์วาย","chɔ̂ɔp mâak khâ · chɔ̂ɔp duu sii-rîi waai","非常喜歡，很喜歡看泰BL劇。"],["ยังไม่ค่อยได้ดูค่ะ","yang mâi khɔ̂i dâai duu khâ","還沒怎麼看過。"]],"s":[["ดูซีรีส์วายใน YouTube ค่ะ","在YouTube看BL劇"],["ชอบดูหนังไทยค่ะ","喜歡看泰國電影"]],"f":["ดูเรื่องอะไรบ้างคะ","duu rʉ̂ang à-rai bâang khá","你看過哪些泰劇？"],"g":"ซีรีส์ = 影集 ／ วาย = BL（男男愛情）／ ยังไม่ค่อยได้ = 還沒怎麼⋯⋯","t":"c","n":"泰國BL劇（ซีรีส์วาย）在台灣和全亞洲都非常流行。如果你看過，告訴對方你喜歡哪部，泰國人會非常有共鳴！"},{"i":"Q39","q":["ใช้ LINE ไหมครับ","chái LINE mǎi khráp","你有在用LINE嗎？"],"a":[["ใช้ค่ะ","chái khâ","有用。"],["ใช้ค่ะ ขอ ID ได้เลยค่ะ","chái khâ · khɔ̌ɔ ai-dii dâai ləəy khâ","有用，你可以直接要我的ID！"]],"s":[["ใช้ค่ะ แต่ไม่ค่อยได้เช็คเลย","有用，但不太常看"]],"f":["แอดกันได้ไหมคะ","ɛ́ɛt gan dâai mǎi khá","可以互加好友嗎？"],"g":"ใช้ = 使用 ／ ขอ ID = 要ID ／ แอด = 加（好友，借用英語）","t":"c","n":"LINE 是泰國人最主要的通訊軟體，認識新朋友幾乎都先問這句。有LINE帳號是打入泰國社交圈最重要的第一步！"},{"i":"Q40","q":["ขอไอจีได้ไหมครับ","khɔ̌ɔ ai-jii dâai mǎi khráp","可以要你的Instagram嗎？"],"a":[["ได้เลยค่ะ ไอจีคือ ___","dâai ləəy khâ · ai-jii khʉʉ ___","當然可以，我的IG是⋯⋯"],["ขอ LINE แทนได้ไหมคะ","khɔ̌ɔ LINE thɛɛn dâai mǎi khá","可以改要LINE嗎？"]],"s":[["ได้ค่ะ แต่ใช้ LINE ง่ายกว่านะ","可以，但LINE比較方便"]],"f":["วันๆ เล่นไอจีไหมคะ","wan wan lên ai-jii mǎi khá","你平常有在刷IG嗎？"],"g":"ไอจี = Instagram（口語縮寫）／ คือ = 是（說明/等於）／ แทน = 代替","t":"c","n":"泰國年輕人常用 ไอจี（IG）、เฟซบุ๊ก（Facebook）、ติ๊กต็อก（TikTok）。通常加LINE比IG更常見！"},{"i":"Q41","q":["คุณออกกำลังกายไหมครับ","khun ɔ̀ɔk gam-lang gaai mǎi khráp","你有在運動嗎？"],"a":[["ออกกำลังกายบ้างค่ะ","ɔ̀ɔk gam-lang gaai bâang khâ","有在運動，偶爾。"],["ไม่ค่อยได้ออกกำลังกายเลยค่ะ","mâi khɔ̂i dâai ɔ̀ɔk gam-lang gaai ləəy khâ","不太有在運動。"]],"s":[["ชอบไปยิมค่ะ","喜歡去健身房"],["วิ่งตอนเช้าค่ะ","早上跑步"],["เล่นโยคะค่ะ","練瑜伽"]],"f":["ชอบเล่นกีฬาอะไรคะ","chɔ̂ɔp lên gii-laa à-rai khá","你喜歡玩什麼運動？"],"g":"ออกกำลังกาย = 運動 ／ บ้าง 放句尾 = 偶爾 ／ ไม่ค่อยได้ = 不太有⋯⋯","t":"c","n":"泰國人很流行早晨或傍晚在公園跑步，曼谷的Lumpini公園是著名晨跑聖地。說你也喜歡跑步，很容易找到運動同好！"},{"i":"Q42","q":["คุณนอนกี่โมงครับ","khun nɔɔn gìi moong khráp","你幾點睡覺？"],"a":[["นอนประมาณสี่ทุ่มค่ะ","nɔɔn bprà-maan sìi tûm khâ","大概晚上10點睡。"],["นอนดึกค่ะ เที่ยงคืนกว่า","nɔɔn dʉ̀k khâ · thîiang-khʉʉn gwàa","睡得很晚，過了午夜。"]],"s":[["แล้วแต่วันค่ะ","看當天情況"],["สามทุ่มค่ะ","晚上9點"],["ตีสองค่ะ","凌晨2點"]],"f":["ตื่นกี่โมงคะ","dtʉ̀ʉn gìi moong khá","你幾點起床？"],"g":"กี่โมง = 幾點 ／ ทุ่ม = 下午7點後計時（สี่ทุ่ม=22:00）／ ดึก = 晚、深夜","t":"l","n":"泰文時間：下午7點後用 ทุ่ม（สี่ทุ่ม=22:00），凌晨用 ตี（ตีหนึ่ง=01:00）。比24小時制更常見！"},{"i":"Q43","q":["คุณคิดยังไงกับคนไทยคะ","khun khít yang-ngai gàp khon thai khá","你覺得泰國人怎麼樣？"],"a":[["คนไทยน่ารักมากเลยครับ","khon thai nâa-rák mâak ləəy khráp","泰國人真的很可愛！"],["คนไทยเป็นมิตรมากครับ","khon thai bpen mít mâak khráp","泰國人非常友善。"]],"s":[["คนไทยยิ้มเก่งครับ ชอบมาก","泰國人很愛笑，很喜歡"]],"f":["มีประสบการณ์อะไรที่ประทับใจไหมครับ","mii bprà-sòp-gaan à-rai thîi bprà-tháp jai mǎi khráp","有什麼印象深刻的經驗嗎？"],"g":"คิดยังไงกับ = 你覺得⋯⋯怎麼樣 ／ น่ารัก = 可愛 ／ เป็นมิตร = 友善","t":"c","n":"泰國被稱為「微笑之國」，ยิ้มเก่ง（很會笑）是對泰國人最高的讚美之一！"},{"i":"Q44","q":["คุณกลัวอะไรไหมคะ","khun glua à-rai mǎi khá","你有什麼害怕的嗎？"],"a":[["กลัวแมลงสาบครับ","glua mɛɛng-lɛɛng-sàap khráp","我怕蟑螂。"],["กลัวงูครับ","glua nguu khráp","我怕蛇。"]],"s":[["ความสูง","高度"],["แมงมุม","蜘蛛"],["ผี","鬼"]],"f":["ที่ไทยเจองูหรือเปล่าครับ","thîi thai jəə nguu rʉ̌ʉ bplào khráp","在泰國有遇到蛇嗎？"],"g":"กลัว = 害怕 ／ แมลงสาบ = 蟑螂 ／ เจอ = 遇到/碰到","t":"c","n":"泰國人普遍相信鬼神，กลัวผี（怕鬼）也是非常常見的話題，尤其聊到泰國鬼片時。說你也有點怕，反而更有共鳴！"},{"i":"Q45","q":["คุณเครียดไหมคะ","khun khrîiat mǎi khá","你壓力大嗎？"],"a":[["เครียดนิดหน่อยครับ","khrîiat nít nɔ̀i khráp","有一點壓力。"],["ไม่ค่อยเครียดครับ","mâi khɔ̂i khrîiat khráp","不太有壓力。"]],"s":[["เครียดอยู่ครับ แต่มาเที่ยวก็ดีขึ้น","有壓力，但來玩就好多了"]],"f":["คลายเครียดยังไงครับ","khlaai khrîiat yang-ngai khráp","你怎麼舒壓？"],"g":"เครียด = 壓力大/緊張 ／ นิดหน่อย = 一點點 ／ คลายเครียด = 舒壓","t":"l","n":"เครียด 在泰文是非常口語的詞，不只是「壓力大」，也可以形容「焦慮、緊張」。"},{"i":"Q46","q":["คุณมีความฝันอะไรคะ","khun mii khwaam fǎn à-rai khá","你有什麼夢想？"],"a":[["อยากเดินทางรอบโลกครับ","yàak dəən-thaang rɔ̂ɔp-lôok khráp","想環遊世界。"],["อยากมีธุรกิจของตัวเองครับ","yàak mii thú-rá-gìt khɔ̌ɔng dtua eeng khráp","想要有自己的事業。"]],"s":[["อยากพูดภาษาไทยได้เก่งๆ ครับ","想把泰語說得很好"],["อยากมีครอบครัว","想成家"]],"f":["ทำไมถึงอยากทำอย่างนั้นครับ","tham-mai thʉ̌ng yàak tham yàang nán khráp","為什麼想做這件事？"],"g":"ความฝัน = 夢想（名詞）／ อยาก + 動詞 = 想⋯⋯ ／ ของตัวเอง = 自己的","t":"l","n":"อยาก + 動詞 是表達願望最基本的句型。記住這個，就能說出所有「我想做的事」，非常萬用！"},{"i":"Q47","q":["คุณชอบอะไรในไทยที่สุดคะ","khun chɔ̂ɔp à-rai nai thai thîi sùt khá","你最喜歡泰國的什麼？"],"a":[["ชอบอาหารที่สุดครับ","chɔ̂ɔp aa-hǎan thîi sùt khráp","最喜歡食物。"],["ชอบคนไทยที่สุดครับ","chɔ̂ɔp khon thai thîi sùt khráp","最喜歡泰國人。"]],"s":[["ชอบราคาถูกที่สุดเลยครับ","最喜歡物價便宜"],["บรรยากาศที่นี่","這裡的氛圍"]],"f":["รู้สึกยังไงเทียบกับประเทศอื่นครับ","rúu-sèuk yang-ngai thîiap gàp bprà-thêet ʉ̀ʉn khráp","跟其他國家比，感覺怎麼樣？"],"g":"ที่สุด = 最（最高級）／ ราคาถูก = 價格便宜 ／ เทียบกับ = 和⋯⋯比較","t":"l","n":"形容詞 + ที่สุด = 最⋯⋯，是泰文最高級固定句型。ชอบ___ที่สุด（最喜歡⋯⋯）——填入任何東西都自然！"},{"i":"Q48","q":["คุณไม่ชอบอะไรในไทยคะ","khun mâi chɔ̂ɔp à-rai nai thai khá","你有什麼不喜歡泰國的嗎？"],"a":[["ไม่ชอบรถติดครับ","mâi chɔ̂ɔp rót dtìt khráp","不喜歡塞車。"],["ไม่ชอบอากาศร้อนครับ","mâi chɔ̂ɔp aa-gàat rɔ́ɔn khráp","不喜歡天氣太熱。"]],"s":[["ทุกอย่างดีหมดเลยครับ","什麼都很好啊"],["มีนิดหน่อยแต่ไม่เป็นไร","有一點但沒關係"]],"f":["ถ้าเปลี่ยนได้จะเปลี่ยนอะไรครับ","thâa bplìian dâai jà bplìian à-rai khráp","如果可以改，你會改什麼？"],"g":"รถติด = 塞車 ／ ทุกอย่างดีหมด = 什麼都很好","t":"c","n":"說รถติด（塞車）是外國人最有共鳴的抱怨——連泰國人自己也這樣說。是非常安全又自然的話題！"},{"i":"Q49","q":["ถ้ามีเวลาคุณอยากทำอะไรคะ","thâa mii wee-laa khun yàak tham à-rai khá","如果有時間，你想做什麼？"],"a":[["อยากเรียนภาษาไทยให้เก่งขึ้นครับ","yàak riian phaa-sǎa thai hâi gèng khʉ̂n khráp","想把泰語學得更好。"],["อยากท่องเที่ยวให้ทั่วไทยครับ","yàak thɔ̂ng-thîiao hâi thûa thai khráp","想把泰國各地都走遍。"]],"s":[["อยากลองกินอาหารไทยทุกภาคครับ","想嘗試泰國各地料理"]],"f":["วางแผนจะทำจริงๆ ไหมครับ","waang-phɛ̌ɛn jà tham jing jing mǎi khráp","你有在認真計畫嗎？"],"g":"ถ้ามีเวลา = 如果有時間 ／ ให้เก่งขึ้น = 讓⋯⋯更好（提升）／ ทั่ว = 遍/全部","t":"l","n":"ให้ + 形容詞/動詞 表示「讓⋯⋯達到某狀態」，例如 เรียนให้เก่ง = 學到精通、กินให้อิ่ม = 吃到飽。很實用！"},{"i":"Q50","q":["คุณจะบอกอะไรคนที่อยากมาไทยคะ","khun jà bɔ̀ɔk à-rai khon thîi yàak maa thai khá","你會對想來泰國的人說什麼？"],"a":[["บอกให้มาเลยครับ ไม่ต้องคิดเยอะ","bɔ̀ɔk hâi maa ləəy khráp · mâi dtɔ̂ng khít yə́","叫他們直接來，不用想太多！"],["บอกว่าต้องลองอาหารไทยครับ","bɔ̀ɔk wâa dtɔ̂ng lɔɔng aa-hǎan thai khráp","告訴他們一定要試泰國食物。"]],"s":[["บอกว่ามาแล้วจะไม่อยากกลับครับ","說來了就不想回去了"]],"f":["แนะนำที่เที่ยวอะไรดีครับ","nɛ́ɛ-nam thîi thîiao à-rai dii khráp","你推薦哪些景點？"],"g":"บอกให้ = 告訴⋯⋯叫他⋯⋯ ／ ไม่ต้องคิดเยอะ = 不用想太多","t":"c","n":"說 มาแล้วจะไม่อยากกลับ（來了就不想走），是泰國人最愛聽的一句話！"}],"s":[{"id":"s01","n":"01","title":"自我介紹","tth":"การแนะนำตัว","em":"👋","r":[0,10]},{"id":"s02","n":"02","title":"旅遊行程","tth":"การท่องเที่ยว","em":"✈️","r":[10,18]},{"id":"s03","n":"03","title":"飲食","tth":"อาหารและเครื่องดื่ม","em":"🍜","r":[18,26]},{"id":"s04","n":"04","title":"工作生活","tth":"การทำงานและชีวิตประจำวัน","em":"💼","r":[26,34]},{"id":"s05","n":"05","title":"社交當下","tth":"การสังสรรค์","em":"💬","r":[34,42]},{"id":"s06","n":"06","title":"感受意見","tth":"ความรู้สึกและความคิดเห็น","em":"💭","r":[42,50]}],"a":[{"id":"apA","ic":"⭐","title":"附錄A · 追星 & 機場","tth":"เจอดาราตอนไปเที่ยว","ss":[{"l":"路上偶遇 — 你可能說的話","it":[["พี่ ___ ใช่ไหมคะ/ครับ","phîi ___ châi mǎi khá/khráp","請問你是___嗎？"],["ขอถ่ายรูปกับพี่ได้ไหมคะ/ครับ","khɔ̌ɔ thàai rûup gàp phîi dâai mǎi khá/khráp","可以跟你合照嗎？"],["ขอลายเซ็นพี่ได้ไหมคะ/ครับ","khɔ̌ɔ laai-sen phîi dâai mǎi khá/khráp","可以幫我簽名嗎？"],["หนู/ผมเป็นแฟนคลับของพี่ค่ะ/ครับ","nǔu/phǒm bpen fɛɛn-khláp khɔ̌ɔng phîi khâ/khráp","我是你的粉絲！"],["หนู/ผมมาจากไต้หวันค่ะ/ครับ","nǔu/phǒm maa jàak dtâi-wǎn khâ/khráp","我從台灣來！"],["พี่หน้าตาดีมากเลยค่ะ/ครับ","phîi nâa-dtaa dii mâak ləəy khâ/khráp","你真的好帥好漂亮！"],["หนู/ผมติดตามผลงานพี่ทุกวันเลยค่ะ/ครับ","nǔu/phǒm dtìt-dtaam phǒn-ngaan phîi thúk wan ləəy khâ/khráp","我每天都在追你的作品！"]]},{"l":"💬 明星可能問你","it":[["มาจากไหนคะ/ครับ","maa jàak nǎi khá/khráp","你從哪裡來？"],["รู้จักได้ยังไงคะ/ครับ","rúu-jàk dâai yang-ngai khá/khráp","怎麼認識我的？"],["ดูซีรีส์เรื่องอะไรบ้างคะ/ครับ","duu sii-rîi rʉ̂ang à-rai bâang khá/khráp","看過我哪些劇？"],["มาคนเดียวหรือมากับเพื่อนคะ/ครับ","maa khon dǐaw rʉ̌ʉ maa gàp phʉ̂an khá/khráp","一個人來還是和朋友來？"]]},{"l":"✈️ 機場接機 — 你會說的話","it":[["ยินดีต้อนรับสู่ไต้หวันนะคะ/ครับ พี่","yin-dii dtɔ̂ɔn-ráp sùu dtâi-wǎn ná khá/khráp phîi","歡迎來台灣！"],["หนู/ผมมารอพี่ที่สนามบินโดยเฉพาะเลยค่ะ/ครับ","nǔu/phǒm maa rɔɔ phîi thîi sà-nǎam-bin dooi chà-phɔ́ ləəy khâ/khráp","我特地來機場等你！"],["เหนื่อยไหมคะ/ครับ พี่ เดินทางไกลมาก","nʉ̀ai mǎi khá/khráp phîi · dəən thaang glai mâak","一路上辛苦了。"],["ขอให้พี่มีความสุขที่ไต้หวันนะคะ/ครับ","khɔ̌ɔ hâi phîi mii khwaam-sùk thîi dtâi-wǎn ná khá/khráp","希望你在台灣過得開心！"],["หนู/ผมรอวันนี้มานานมากเลยค่ะ/ครับ","nǔu/phǒm rɔɔ wan níi maa naan mâak ləəy khâ/khráp","我等這一天好久了！"]]}]},{"id":"apB","ic":"🎤","title":"附錄B · 見面會","tth":"ภาษาไทยสำหรับมีตติ้ง","ss":[{"l":"明星可能問你的話","it":[["มาจากที่ไหนคะ/ครับ","maa jàak thîi nǎi khá/khráp","你從哪裡來？"],["มาไทยครั้งแรกไหมคะ/ครับ","maa thai khráng rɛ̂ɛk mǎi khá/khráp","第一次來泰國嗎？"],["ชอบซีรีส์เรื่องไหนที่สุดคะ/ครับ","chɔ̂ɔp sii-rîi rʉ̂ang nǎi thîi sùt khá/khráp","最喜歡我哪一部劇？"],["มีอะไรอยากบอกไหมคะ/ครับ","mii à-rai yàak bɔ̀ɔk mǎi khá/khráp","有什麼想說的嗎？"],["มีความสุขไหมวันนี้คะ/ครับ","mii khwaam-sùk mǎi wan níi khá/khráp","今天開心嗎？"],["เรียนภาษาไทยมานานแค่ไหนแล้วคะ/ครับ","riian phaa-sǎa thai maa naan khɛ̂ɛ nǎi lɛ́ɛw khá/khráp","你學泰語多久了？"]]},{"l":"你對明星說的十句話","it":[["ขอบคุณที่มาไต้หวันนะคะ/ครับ พี่","khɔ̀ɔp-khun thîi maa dtâi-wǎn ná khá/khráp phîi","謝謝你來台灣"],["พี่เป็นแรงบันดาลใจของหนู/ผมค่ะ/ครับ","phîi bpen rɛɛng ban-daan-jai khɔ̌ɔng nǔu/phǒm khâ/khráp","你是我的動力來源"],["หนู/ผมเรียนภาษาไทยเพราะพี่ค่ะ/ครับ","nǔu/phǒm riian phaa-sǎa thai phrɔ́ phîi khâ/khráp","我因為你而學泰語"],["จะรักพี่ตลอดไปเลยค่ะ/ครับ","jà rák phîi dtà-lɔ̀ɔt bpai ləəy khâ/khráp","我會永遠愛你"],["ผลงานของพี่ทำให้หนู/ผมมีความสุขค่ะ/ครับ","phǒn-ngaan khɔ̌ɔng phîi tham hâi nǔu/phǒm mii khwaam-sùk khâ/khráp","你的作品讓我很快樂"],["ขอให้โชคดีในทุกผลงานนะคะ/ครับ พี่","khɔ̌ɔ hâi chôok-dii nai thúk phǒn-ngaan ná khá/khráp phîi","祝你每一部作品都順利"],["พี่ทำให้หนู/ผมอยากมาไทยค่ะ/ครับ","phîi tham hâi nǔu/phǒm yàak maa thai khâ/khráp","是你讓我想來泰國的"],["ได้เจอพี่วันนี้เป็นความฝันเลยค่ะ/ครับ","dâai jəə phîi wan níi bpen khwaam-fǎn ləəy khâ/khráp","今天能見到你是我的夢想"]]}]},{"id":"apC","ic":"📣","title":"附錄C · 粉絲用語","tth":"ศัพท์แฟนคลับและการเชียร์","type":"vocab"},{"id":"apD","ic":"🍽️","title":"附錄D · 點餐實戰","tth":"การสั่งอาหาร","type":"food"},{"id":"apE","ic":"🛍️","title":"附錄E · 購物砍價","tth":"การช้อปปิ้งและต่อรองราคา","type":"shop"},{"id":"apF","ic":"👤","title":"附錄F · 代名詞 & 語助詞","tth":"สรรพนามและคำลงท้าย","type":"gram"},{"id":"apG","ic":"🗣️","title":"附錄 · 說話習慣 & 流行語","tth":"ลักษณะการพูดและคำฮิต","type":"slang"}],"e":{"vocab":[["แฟนคลับ","fɛɛn-khláp","粉絲/粉絲團"],["ซีพี/ชิป","sii-phii/chíp","配對/CP"],["มีตติ้ง","mii-dtîng","見面會"],["แกลม","glɛɛm","機場接送應援"],["แฟนไซน์","fɛɛn-sǎi","簽售會 / Fansign event"],["ล่าไลฟ์","lâa-lai","追直播"],["คลิป","khlíp","影片片段"],["อัปเดต","àp-dèet","更新動態"],["เดบิวต์","dee-biu","出道"],["สตอรี่","sà-dtɔɔ-rîi","限時動態"],["พระเอก/นางเอก","phrá-àyk/naang-àyk","男/女主角"],["วาย","waai","BL（男男愛情）"],["ซีรีส์","sii-rîi","影集/連續劇"]],"cheer":[["เย้！","yêe","耶！（歡呼）"],["โอ้โห！","ôo-hǒo","哇噢！（驚嘆）"],["น่ารักมากเลย！","nâa-rák mâak ləəy","好可愛！"],["สู้ๆ นะ！","sûu sûu ná","加油！"],["รักนะ！","rák ná","我愛你！"],["แสดงได้เก่งมากเลย！","sà-dɛɛng dâai gèng mâak ləəy","演得好棒！"],["หล่อมาก/สวยมาก！","lɔ̀ɔ mâak / sǔay mâak","好帥／好漂亮！"],["เราจะรอนะ！","rao jà rɔɔ ná","我們會等你的！"]],"event":[["มีตติ้งเริ่มกี่โมงคะ/ครับ","mii-dtîng rə̂əm gìi moong khá/khráp","見面會幾點開始？"],["ต่อคิวที่ไหนคะ/ครับ","dtɔ̀ɔ khiu thîi nǎi khá/khráp","排隊在哪裡？"],["บัตรของหนู/ผมเป็นโซน A ค่ะ/ครับ","bàt khɔ̌ɔng nǔu/phǒm bpen soon A khâ/khráp","我的票是A區。"],["เข้าได้แล้วไหมคะ/ครับ","khâo dâai lɛ́ɛw mǎi khá/khráp","可以進去了嗎？"],["โซนถ่ายรูปอยู่ที่ไหนคะ/ครับ","soon thàai rûup yùu thîi nǎi khá/khráp","拍照區在哪裡？"],["ที่นี่มีคนนั่งไหมคะ/ครับ","thîi nîi mii khon nâng mǎi khá/khráp","這個位子有人坐嗎？"],["ห้องน้ำอยู่ที่ไหนคะ/ครับ","hɔ̂ng náam yùu thîi nǎi khá/khráp","廁所在哪裡？"]],"order":[["พี่/น้องคะ/ครับ","phîi/nɔ́ɔng khá/khráp","服務生（呼叫）"],["ขอเมนูหน่อยได้ไหมคะ/ครับ","khɔ̌ɔ mee-nuu nɔ̀i dâai mǎi khá/khráp","可以給我菜單嗎"],["ขอแนะนำอะไรดีไหมคะ/ครับ","khɔ̌ɔ nɛ́ɛ-nam à-rai dii mǎi khá/khráp","有什麼推薦嗎"],["เอา ___ นึงจานค่ะ/ครับ","ao ___ nʉ̀ng jaan khâ/khráp","我要一份___"],["เอาอันนี้ค่ะ/ครับ","ao an níi khâ/khráp","我要這個"],["ไม่เผ็ดนะคะ/ครับ","mâi phèt ná khá/khráp","不要辣"],["เผ็ดน้อยนะคะ/ครับ","phèt nɔ́ɔi ná khá/khráp","少辣"],["ไม่ใส่ผักนะคะ/ครับ","mâi sài phàk ná khá/khráp","不要放蔬菜"],["เช็คบิลนะคะ/ครับ","chék bin ná khá/khráp","我要結帳"],["แยกบิลได้ไหมคะ/ครับ","yɛ̂ɛk bin dâai mǎi khá/khráp","可以分開結帳嗎"],["ใช้บัตรได้ไหมคะ/ครับ","chái bàt dâai mǎi khá/khráp","可以刷卡嗎"]],"sweet":[["หวานปกติ","正常甜"],["หวานน้อย","少甜"],["หวานน้อยมาก","微糖"],["ไม่หวาน","無糖"]],"ice":[["น้ำแข็งปกติ","正常冰"],["น้ำแข็งน้อย","少冰"],["ไม่เอาน้ำแข็ง","去冰"],["แยกน้ำแข็ง","冰塊分開"]],"dish":[["ผัดไทย","phàt thai","泰式炒河粉"],["ต้มยำกุ้ง","dtôm yam gûng","酸辣蝦湯"],["ข้าวผัด","khâaw phàt","炒飯"],["ผัดกะเพรา","phàt gà-phrao","打拋炒"],["ส้มตำ","sôm-dtam","青木瓜沙拉"],["แกงเขียวหวาน","gɛɛng khǐiao wǎan","綠咖哩"],["ข้าวมันไก่","khâaw man gài","海南雞飯"],["ก๋วยเตี๋ยว","gǔai-dtǐaw","米線/河粉"],["ข้าวเหนียวมะม่วง","khâaw nǐaw má-mûang","芒果糯米飯"],["หมูปิ้ง","mǔu bpîng","烤豬肉串"]],"drink":[["ชาไทย","chaa thai","泰式奶茶"],["กาแฟเย็น","gaa-fɛɛ yen","泰式冰咖啡"],["น้ำมะพร้าว","náam má-phráaw","椰子水"],["โอเลี้ยง","oo-lîiang","泰式黑糖冰咖啡"],["น้ำเปล่า","náam bplào","白開水"],["ชานมไข่มุก","chaa nom khài-múk","珍珠奶茶"]],"fruit":[["มะม่วง","má-mûang","芒果"],["มังคุด","mang-khút","山竹"],["ทุเรียน","thú-riian","榴槤"],["สับปะรด","sàp-bpà-rót","鳳梨"],["ลิ้นจี่","lín-jìi","荔枝"],["แตงโม","dtɛɛng-moo","西瓜"],["กล้วย","glûay","香蕉"],["แก้วมังกร","gɛ̂ɛw mang-gɔɔn","火龍果"],["เงาะ","ngɔ́","紅毛丹"]],"shop":[["ราคาเท่าไหร่คะ/ครับ","raa-khaa thâo-rài khá/khráp","多少錢？"],["อันนี้เท่าไหร่คะ/ครับ","an níi thâo-rài khá/khráp","這個多少錢？"],["แพงไปหน่อยนะคะ/ครับ","phɛɛng bpai nɔ̀i ná khá/khráp","有點貴耶"],["ลดได้ไหมคะ/ครับ","lót dâai mǎi khá/khráp","可以便宜一點嗎？"],["ถ้าซื้อสองอันลดได้ไหมคะ/ครับ","thâa sʉ́ʉ sɔ̌ɔng an lót dâai mǎi khá/khráp","買兩個可以便宜嗎？"],["ขอลองก่อนได้ไหมคะ/ครับ","khɔ̌ɔ lɔɔng gɔ̀ɔn dâai mǎi khá/khráp","可以試穿/試用嗎？"],["มีไซส์อื่นไหมคะ/ครับ","mii sái ʉ̀ʉn mǎi khá/khráp","有其他尺寸嗎？"],["มีสีอื่นไหมคะ/ครับ","mii sǐi ʉ̀ʉn mǎi khá/khráp","有其他顏色嗎？"],["เอาอันนี้แล้วกันค่ะ/ครับ","ao an níi lɛ́ɛw gan khâ/khráp","我要這個了"],["ขอถุงด้วยนะคะ/ครับ","khɔ̌ɔ thǔng dûay ná khá/khráp","可以給我袋子嗎？"],["ขอดูก่อนนะคะ/ครับ","khɔ̌ɔ duu gɔ̀ɔn ná khá/khráp","我先看看"],["ขอบคุณนะคะ/ครับ ดูเฉยๆ","khɔ̀ɔp-khun ná khá/khráp · duu chə̌əy chə̌əy","謝謝，我只是看看"]],"pron":[["ผม","phǒm","我","男生自稱，禮貌正式"],["ฉัน","chǎn","我","女生自稱，中性常用"],["หนู","nǔu","我","女生對長輩/明星，謙遜可愛"],["เรา","rao","我/我們","朋友之間，輕鬆隨意"],["คุณ","khun","你","稱呼對方，中性禮貌"],["พี่","phîi","你（年長）","長輩/明星，親切尊重"],["น้อง","nɔ́ɔng","你（年輕）","服務生/晚輩，親切"],["เขา","khǎo","他/她","第三人稱，不分性別"]],"par":[["นะ","ná","唷、囉（親切確認）","ดีนะคะ 不錯喔！"],["เลย","ləəy","真的、超～（強調）","อร่อยเลย 超好吃！"],["อ่ะ","à","啊、嘛（輕鬆隨興）","ไม่รู้อ่ะ 不知道啊～"],["หน่อย","nɔ̀i","一下（客氣請求）","ช่วยหน่อยได้ไหม 可以幫我一下嗎"],["สิ","sì","呀、啊（催促/命令）","ไปสิ 去嘛！"],["ด้วย","dûay","也、一起","เอาอันนี้ด้วยนะ 也要這個喔"],["แล้ว","lɛ́ɛw","已經（完成）","กินแล้วค่ะ 我吃過了"],["ก็","gɔ̂ɔ","就、也（順理成章）","ก็ดีนะ 這樣也好啊"]],"habits":[[1,"縮音：อะไร → ไร","กินไร？","吃什麼？（「什麼」口語說 ไร）"],[2,"縮音：อย่างไร → ยังไง","เป็นยังไงบ้าง？","最近怎麼樣？"],[3,"ร 與 ล 混用","เรียน → เลียน","口語中 ร 常唸成 ล，完全自然"],[4,"語尾助詞 อ่ะ","ไม่รู้อ่ะ","帶有「啊、嘛」的輕鬆感"],[5,"省略主詞","ยังไม่กิน","（我）還沒吃——語境清楚就不說「我」"],[6,"主詞選擇靈活","หนู / เรา / ผม","「我」依情境換說法，選對更自然"],[7,"555 = 哈哈哈","5555","「5」唸 hâa，三個5就是笑聲","ฮ่า ฮ่า ฮ่า"],[8,"語尾 นะ","ไปละนะ","溫和確認、提醒「唷、囉」，先走囉！"]],"slang":[["นอยด์","nɔ́ɔi","好委屈、悶悶的","（源自 paranoid）"],["ชิว/ชิล","chiiw/chǐn","輕鬆、沒事、悠閒",""],["เริ่ด","rə̂ət","太棒了、很讚","（有時用於敷衍）"],["แรงมาก","rɛɛng mâak","好扯、很強",""],["เผือก","phʉ̀ak","多管閒事",""],["ฟิน","fin","很爽、很滿足、很過癮",""],["ขิง","khǐng","炫耀",""],["กิ๊ก","gík","地下戀人",""],["กั้ก","gâk","刻意曖昧、不給承諾",""],["ใจฟู","jai fuu","心花怒放、很幸福",""],["ตึงมาก","dtʉng mâak","很頂、太刺激了",""]]}}</script>
+<script>
+
+let ROM=true,SLOW=false,isMob=window.innerWidth<769,curPl=null,FILTER='all';
+const PROGRESS_KEY='phud_lrn';
+function loadProgress(){
+ try{
+  const raw=localStorage.getItem(PROGRESS_KEY);
+  const parsed=raw?JSON.parse(raw):{};
+  return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{};
+ }catch(e){return {};}
+}
+function saveProgress(){
+ try{localStorage.setItem(PROGRESS_KEY,JSON.stringify(LRN));}catch(e){console.warn('無法儲存學習進度。',e);}
+}
+let LRN=loadProgress();
+const D=JSON.parse(document.getElementById('jd').textContent);
+const QS=D.q,SECS=D.s,APX=D.a,E=D.e;
+
+function speak(t){
+ if(!window.speechSynthesis||!t)return;
+ window.speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(t);
+ u.lang='th-TH';u.rate=SLOW?0.6:0.88;u.pitch=1;
+ window.speechSynthesis.speak(u);
+}
+function playBtn(el,t){
+ if(curPl)curPl.classList.remove('pl');
+ curPl=el;el.classList.add('pl');speak(t);
+ setTimeout(()=>{if(curPl===el)el.classList.remove('pl');},3000);
+}
+function esc(s){return(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');}
+function ab(t,e=''){return `<button class="abtn${e?' '+e:''}" onclick="playBtn(this,'${esc(t)}')" title="播放">▶</button>`;}
+function ro(cls,t){return `<div class="${cls}${ROM?'':' hid'}">${t}</div>`;}
+
+function rQ(q){
+ const id=q.i,lrn=LRN[id]?'lrn':'';
+ const nl=q.t==='c'?'🌍 文化小知識':'🗣 語言小知識';
+ let ans='';
+ q.a.forEach((a,i)=>{
+  ans+=`<div class="ans"><div class="anl">${i+1}</div><div class="ant">
+   <div class="anth">${a[0]}</div>${ro('anro',a[1])}<div class="anzh">${a[2]}</div>
+  </div>${ab(a[0])}</div>`;
+ });
+ let subs='';
+ if(q.s&&q.s.length){
+  const chips=q.s.map(s=>`<span class="schip" onclick="speak('${esc(s[0])}')">
+   <span class="sch-th">${s[0]}</span>${s[1]?`<span class="sch-zh">${s[1]}</span>`:''}</span>`).join('');
+  subs=`<div class="subs"><div class="sub-lbl">換一換 ⟶</div><div class="sub-chips">${chips}</div></div>`;
+ }
+ const fu=q.f?`<div class="fu"><div class="fu-lbl">↩ 繼續聊</div><div class="fu-row">
+  <div class="fu-tx"><div class="futh">${q.f[0]}</div>${ro('furo',q.f[1])}<div class="fuzh">${q.f[2]}</div></div>
+  ${ab(q.f[0])}</div></div>`:'';
+ const gn=q.g?`<div class="note ng"><div class="ng-l">📖 文法重點</div><div class="ng-t">${q.g}</div></div>`:'';
+ const cn=q.n?`<div class="note nc"><div class="nc-l">${nl}</div><div class="nc-t">${q.n}</div></div>`:'';
+ const lb=LRN[id]?`<button class="lbtn dn" data-lrn-id="${id}" aria-pressed="true" onclick="tLrn('${id}',this)">↩ 改為未熟悉</button>`
+  :`<button class="lbtn" data-lrn-id="${id}" aria-pressed="false" onclick="tLrn('${id}',this)">✓ 標記為熟悉</button>`;
+ return `<div class="qc ${lrn}" id="${id}">
+  <div class="qch" onclick="tCard('${id}')">
+   <div class="qcn">${id.replace('Q','')}</div>
+   <div class="qcq"><div class="qcth">${q.q[0]}</div>${ro('qcro',q.q[1])}<div class="qczh">${q.q[2]}</div></div>
+   <div class="qca">${ab(q.q[0])}<button class="xbtn">▾</button></div>
+  </div>
+  <div class="qcb"><div class="qcbi"><div class="div"></div>${ans}${subs}${fu}
+   <div class="notes">${gn}${cn}</div><div class="cft">${lb}</div>
+  </div></div>
+ </div>`;
+}
+
+function rSec(s){
+ const qs=QS.slice(s.r[0],s.r[1]);
+ const done=qs.filter(q=>LRN[q.i]).length;
+ const pct=Math.round(done/qs.length*100);
+ return `<div class="sec-blk" id="${s.id}">
+  <div class="sec-hd"><div class="sec-n">${s.n}</div>
+   <div class="sec-tts"><div class="sec-tzh">${s.em} ${s.title}</div><div class="sec-tth">${s.tth}</div></div>
+   <div class="sec-chip" id="chip-${s.id}">${done}/${qs.length} 已熟悉</div>
+  </div>${qs.map(q=>rQ(q)).join('')}
+ </div>`;
+}
+
+function rPlist(items){
+ return items.map((p,i)=>`<div class="prow"><div class="pnum">${i+1}</div>
+  <div class="ptx"><div class="pth">${p[0]}</div>${ro('prom',p[1]||'')}<div class="pzh">${p[2]||''}</div></div>
+  ${ab(p[0])}</div>`).join('');
+}
+
+function rAPX(){
+ let h='';
+ APX.forEach(ap=>{
+  let body='';
+  if(ap.ss){
+   ap.ss.forEach(ss=>{body+=`<div class="sslbl">${ss.l}</div><div class="plist">${rPlist(ss.it)}</div>`;});
+  } else if(ap.type==='vocab'){
+   body=`<div class="sslbl">粉絲用語小字典</div>
+    <div class="vgrid">${E.vocab.map(v=>`<div class="vc" onclick="speak('${esc(v[0])}')">
+     <div class="vth">${v[0]}</div>${ro('vro',v[1])}<div class="vzh">${v[2]}</div></div>`).join('')}</div>
+    <div class="sslbl">📣 應援現場喊話</div>
+    <div class="chgrid">${E.cheer.map(c=>`<div class="chrow"><div><div class="ch-th">${c[0]}</div><div class="ch-zh">${c[2]}</div></div>${ab(c[0])}</div>`).join('')}</div>
+    <div class="sslbl">🎪 現場實用句</div><div class="plist">${rPlist(E.event)}</div>`;
+  } else if(ap.type==='food'){
+   body=`<div class="sslbl">點餐流程句</div><div class="plist">${rPlist(E.order)}</div>
+    <div class="sslbl">🍬 甜度</div>
+    <div class="lgrid">${E.sweet.map(s=>`<div class="lcard" onclick="speak('${esc(s[0])}')"><div class="lth">${s[0]}</div><div class="lzh">${s[1]}</div></div>`).join('')}</div>
+    <div class="sslbl">🧊 冰塊</div>
+    <div class="lgrid">${E.ice.map(s=>`<div class="lcard" onclick="speak('${esc(s[0])}')"><div class="lth">${s[0]}</div><div class="lzh">${s[1]}</div></div>`).join('')}</div>
+    <div class="sslbl">🍜 常見菜名</div>
+    <div class="fgrid">${E.dish.map(d=>`<div class="fc" onclick="speak('${esc(d[0])}')">${`<div class="fth">${d[0]}</div>${ro('fro',d[1])}<div class="fzh">${d[2]}</div>`}</div>`).join('')}</div>
+    <div class="sslbl">🧋 飲料</div>
+    <div class="fgrid">${E.drink.map(d=>`<div class="fc" onclick="speak('${esc(d[0])}')">${`<div class="fth">${d[0]}</div>${ro('fro',d[1])}<div class="fzh">${d[2]}</div>`}</div>`).join('')}</div>
+    <div class="sslbl">🍉 水果</div>
+    <div class="fgrid">${E.fruit.map(d=>`<div class="fc" onclick="speak('${esc(d[0])}')">${`<div class="fth">${d[0]}</div>${ro('fro',d[1])}<div class="fzh">${d[2]}</div>`}</div>`).join('')}</div>`;
+  } else if(ap.type==='shop'){
+   body=`<div class="plist">${rPlist(E.shop)}</div>
+    <div class="note nc" style="margin-top:8px"><div class="nc-t">💡 在夜市砍價很正常，但在有標價的商店就不適合。說 แพงไปหน่อยนะ 配上微笑通常有效——語氣越客氣，越容易成功！</div></div>`;
+  } else if(ap.type==='gram'){
+   body=`<div class="sslbl">👤 人稱代名詞</div>
+    <div class="pgrid">${E.pron.map(p=>`<div class="pc"><div class="pton">${p[0]}</div>${ro('ptro',p[1])}<div class="ptzh">${p[2]}</div><div class="ptuse">${p[3]}</div></div>`).join('')}</div>
+    <div class="sslbl">✨ 語助詞</div>
+    <div class="parlist">${E.par.map(p=>`<div class="parrow" onclick="speak('${esc(p[0])}')"><div class="par-th">${p[0]}</div><div>${ro('par-ro',p[1])}</div><div><div class="par-zh">${p[2]}</div><div class="par-ex">${p[3]}</div></div></div>`).join('')}</div>`;
+  } else if(ap.type==='slang'){
+   body=`<div class="sslbl">💬 口語說話習慣</div>
+    <div class="hlist">${E.habits.map(h=>`<div class="hrow"><div class="hn">${h[0]}</div><div class="htx"><div class="htt">${h[1]}</div><div class="hte">${h[2]}</div><div class="htz">${h[3]}</div></div>${ab(h[4]||h[2])}</div>`).join('')}</div>
+    <div class="sslbl">🔥 泰國流行語</div>
+    <div class="sgrid">${E.slang.map(s=>`<div class="scard" onclick="speak('${esc(s[0])}')"><div class="sth">${s[0]}</div>${ro('sro',s[1])}<div class="szh">${s[2]}</div>${s[3]?`<div class="sex">${s[3]}</div>`:''}</div>`).join('')}</div>`;
+  }
+  h+=`<div class="apx" id="${ap.id}"><div class="apx-hd"><div class="apx-ic">${ap.ic}</div>
+   <div class="apx-tit"><div class="apx-tzh">${ap.title}</div><div class="apx-tth">${ap.tth}</div></div></div>${body}</div>`;
+ });
+ return h;
+}
+
+function getDoneCount(){return QS.filter(q=>LRN[q.i]).length;}
+function rSB(){
+ const done=getDoneCount();
+ const total=QS.length;
+ const totalPct=Math.round(done/total*100);
+ let h=`<div class="sb-book"><div class="sb-th">พูดได้เลย</div><div class="sb-zh">50個泰國人一定會跟你聊的話題</div><div class="sb-ct" id="sb-total">✓ ${done}/${total} 已熟悉</div><div class="sb-track" aria-label="學習進度"><div class="sb-track-fill" id="sb-track-fill" style="width:${totalPct}%"></div></div><div class="sb-filter" aria-label="熟悉狀態篩選"><button class="filter-btn ${FILTER==='all'?'on':''}" data-filter="all" onclick="setFilter('all')">全部</button><button class="filter-btn ${FILTER==='learned'?'on':''}" data-filter="learned" onclick="setFilter('learned')">已熟悉</button><button class="filter-btn ${FILTER==='unlearned'?'on':''}" data-filter="unlearned" onclick="setFilter('unlearned')">未熟悉</button></div><div class="sb-actions"><button class="sb-btn" onclick="resetProgress()">重設進度</button></div><div class="sb-save-note">進度會記在目前這台裝置的瀏覽器中。</div></div>
+  <div class="nav-grp"><div class="nav-lbl">六大主題</div>`;
+ SECS.forEach(s=>{
+  const qs=QS.slice(s.r[0],s.r[1]);
+  const sdone=qs.filter(q=>LRN[q.i]).length;
+  const pct=Math.round(sdone/qs.length*100);
+  h+=`<div class="nit" id="nav-${s.id}" onclick="goto('${s.id}')"><div class="nit-em">${s.em}</div>
+   <div class="nit-tx"><div class="nit-t">${s.title}</div><div class="nit-s">${s.tth}</div></div>
+   <div class="nit-b" id="nav-count-${s.id}">${sdone}/${qs.length}</div></div>
+   <div class="nprog"><div class="nprog-b" id="nav-prog-${s.id}" style="width:${pct}%"></div></div>`;
+ });
+ h+=`</div><div class="nav-grp"><div class="nav-lbl">附錄</div>`;
+ APX.forEach(a=>{
+  h+=`<div class="nit" id="nav-${a.id}" onclick="goto('${a.id}')"><div class="nit-em">${a.ic}</div><div class="nit-tx"><div class="nit-t">${a.title}</div></div></div>`;
+ });
+ h+=`</div>`;
+ document.getElementById('sb').innerHTML=h;
+}
+
+function rCnt(){
+ document.getElementById('cnt').innerHTML=SECS.map(s=>rSec(s)).join('')+rAPX();
+}
+
+function tCard(id){document.getElementById(id).classList.toggle('exp');}
+function updateKnownCard(id){
+ const known=!!LRN[id];
+ const c=document.getElementById(id);
+ if(!c)return;
+ c.classList.toggle('lrn',known);
+ const n=c.querySelector('.qcn');
+ if(n)n.style.background=known?'var(--gl)':'var(--gd)';
+ const btn=c.querySelector('.lbtn');
+ if(btn){
+  btn.textContent=known?'↩ 改為未熟悉':'✓ 標記為熟悉';
+  btn.classList.toggle('dn',known);
+  btn.setAttribute('aria-pressed',String(known));
+ }
+}
+function refreshProgress(){
+ const done=getDoneCount(), total=QS.length, pct=Math.round(done/total*100);
+ const totalEl=document.getElementById('sb-total');
+ const trackEl=document.getElementById('sb-track-fill');
+ if(totalEl)totalEl.textContent=`✓ ${done}/${total} 已熟悉`;
+ if(trackEl)trackEl.style.width=`${pct}%`;
+ SECS.forEach(s=>{
+  const qs=QS.slice(s.r[0],s.r[1]);
+  const sdone=qs.filter(q=>LRN[q.i]).length;
+  const spct=Math.round(sdone/qs.length*100);
+  const chip=document.getElementById('chip-'+s.id);
+  const count=document.getElementById('nav-count-'+s.id);
+  const bar=document.getElementById('nav-prog-'+s.id);
+  if(chip)chip.textContent=`${sdone}/${qs.length} 已熟悉`;
+  if(count)count.textContent=`${sdone}/${qs.length}`;
+  if(bar)bar.style.width=`${spct}%`;
+ });
+}
+function applyFilter(){
+ QS.forEach(q=>{
+  const c=document.getElementById(q.i);
+  if(!c)return;
+  const known=!!LRN[q.i];
+  const hide=(FILTER==='learned'&&!known)||(FILTER==='unlearned'&&known);
+  c.classList.toggle('filtered-out',hide);
+ });
+ SECS.forEach(s=>{
+  const sec=document.getElementById(s.id);
+  if(!sec)return;
+  const visible=[...sec.querySelectorAll('.qc')].some(c=>!c.classList.contains('filtered-out'));
+  sec.classList.toggle('filtered-out',!visible);
+ });
+ document.querySelectorAll('.filter-btn').forEach(b=>b.classList.toggle('on',b.dataset.filter===FILTER));
+}
+function setFilter(mode){
+ FILTER=mode;
+ applyFilter();
+}
+function tLrn(id,btn){
+ LRN[id]=!LRN[id];
+ if(!LRN[id])delete LRN[id];
+ updateKnownCard(id);
+ saveProgress();
+ refreshProgress();
+ applyFilter();
+}
+function resetProgress(){
+ if(!getDoneCount())return;
+ if(!window.confirm('確定要把所有題目改回未熟悉嗎？'))return;
+ LRN={};
+ QS.forEach(q=>updateKnownCard(q.i));
+ saveProgress();
+ refreshProgress();
+ applyFilter();
+}
+function syncProgressFromStorage(){
+ LRN=loadProgress();
+ QS.forEach(q=>updateKnownCard(q.i));
+ refreshProgress();
+ applyFilter();
+}
+function goto(id){
+ const el=document.getElementById(id);
+ if(el){el.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>setAct(id),400);}
+ if(isMob)document.getElementById('sb').classList.remove('mob-open');
+}
+function setAct(id){
+ document.querySelectorAll('.nit').forEach(n=>n.classList.remove('act'));
+ const nav=document.getElementById('nav-'+id);if(nav)nav.classList.add('act');
+}
+function toggleSB(){
+ const sb=document.getElementById('sb');
+ if(isMob)sb.classList.toggle('mob-open');else sb.classList.toggle('col');
+}
+function toggleRom(){
+ ROM=!ROM;
+ document.querySelectorAll('.qcro,.anro,.furo,.prom,.vro,.fro,.ptro,.par-ro,.sro').forEach(e=>e.classList.toggle('hid',!ROM));
+ const b=document.getElementById('btnR');
+ b.classList.toggle('on',ROM);
+ b.setAttribute('aria-pressed',String(ROM));
+ b.textContent=ROM?'拼音 ✓':'拼音 ✗';
+}
+function toggleSpd(){
+ SLOW=!SLOW;
+ const b=document.getElementById('btnS');
+ b.classList.toggle('on',SLOW);
+ b.setAttribute('aria-pressed',String(SLOW));
+ b.textContent=SLOW?'🐢 慢速':'▶ 正常';
+}
+function syncViewportMode(){
+ const nextMob=window.innerWidth<769;
+ const sb=document.getElementById('sb');
+ if(nextMob!==isMob){
+  isMob=nextMob;
+  sb.classList.remove('col','mob-open');
+ }
+}
+function initSpy(){
+ const ids=[...SECS.map(s=>s.id),...APX.map(a=>a.id)];
+ const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)setAct(e.target.id);});},{threshold:0.15,rootMargin:'-52px 0px -70% 0px'});
+ ids.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+}
+rSB();rCnt();refreshProgress();applyFilter();initSpy();
+window.addEventListener('resize',syncViewportMode);
+window.addEventListener('storage',e=>{if(e.key===PROGRESS_KEY)syncProgressFromStorage();});
+
+</script>
+</body>
+</html>
